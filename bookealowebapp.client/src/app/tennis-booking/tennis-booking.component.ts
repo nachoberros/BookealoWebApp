@@ -14,11 +14,13 @@ import { Court } from './tennis-booking-model'; // Adjust path as needed
 export class TennisBookingComponent {
   results: Court[] = [];
   loading: boolean = true;
+  selectedDate: string = '';
 
   constructor(private http: HttpClient) { }
 
   onSearch(date: string) {
     this.loading = true;
+    this.selectedDate = date;
     this.http.get<Court[]>(`/api/tennisbooking?date=${date}`).subscribe({
       next: data => {
         this.results = data;

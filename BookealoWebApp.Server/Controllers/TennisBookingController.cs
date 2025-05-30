@@ -1,3 +1,4 @@
+using Bookealo.CommonModel;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,13 @@ namespace BookealoWebApp.Server.Controllers
         {
             var results = _courtRepository.Search(date);
             return Ok(results);
+        }
+
+        [HttpPost]
+        public IActionResult Save([FromBody] BookingRequest booking)
+        {
+            _courtRepository.Save(booking);
+            return Ok();
         }
     }
 }

@@ -7,16 +7,17 @@
   <table class="booking-grid">
   <thead>
     <tr>
-      <th>Time</th>
-      <th *ngFor="let court of courts">{{ court.name }}</th>
+      <th cclass="narrow-column">Time</th>
+      <th *ngFor="let court of courts">{{ court.name }} - {{ court.description }}</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let time of timeSlots">
-      <td>{{ time }}</td>
-      <td *ngFor="let court of courts" [ngClass]="{
-      'booked-court-cell': getBookingName(court, time),
-      'available-court-cell': !getBookingName(court, time)}">
+      <td class="narrow-column">{{ time }}</td>
+      <td 
+        *ngFor="let court of courts" 
+        [ngClass]="{'booked-court-cell': getBookingName(court, time),'available-court-cell': !getBookingName(court, time)}"
+        (click)="!getBookingName(court, time) && onAvailableCourtClick(court, time)">
         {{ getBookingName(court, time) || '' }}
       </td>
     </tr>
@@ -26,3 +27,22 @@
 }@else{
 <p class="booking-grid">No bookings found. Try searching above.</p>
 }
+
+<!-- Backdrop -->
+<div class="modal-backdrop" *ngIf="showModal" (click)="showModal = false"></div>
+
+<!-- Modal -->
+<div class="modal" *ngIf="showModal">
+  <h3>🎾 Booking Court</h3>
+  <p><strong>Court:</strong> {{ selectedCourt?.name }}</p>
+  <p><strong>Time:</strong> {{ selectedTime }}</p>
+  <div class="modal-buttons">
+    <button class="btn cancel" (click)="showModal = false">Cancel</button>
+    <button class="btn confirm" (click)="confirmBooking(selectedCourt, selectedTime)">Confirm</button>
+  </div>
+</div>
+
+<!-- Success Alert -->
+<div class="success-alert" *ngIf="showSuccessAlert">
+  ✅ Court booked successfully!
+</div>

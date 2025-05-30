@@ -1,10 +1,14 @@
+import { User } from "../services/user.service";
+
 export interface CourtBooking {
-  date: string;
-  userName: string;
+    id: number;
+    date: string;
+    user: User;
 }
 
 export interface Court {
-  name: string;
-  description: string;
-  bookings: CourtBooking[];
+    id: number;
+    name: string;
+    description: string;
+    bookings: CourtBooking[];
 }
