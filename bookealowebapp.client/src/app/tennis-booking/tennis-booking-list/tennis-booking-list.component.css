@@ -15,8 +15,9 @@ th {
 
 .booking-grid {
   border-collapse: collapse;
-  width: 100%;
+  width: 90%;
   text-align: center;
+  margin: 2%;
 }
 
 .booking-grid th,
@@ -34,4 +35,63 @@ thead th {
   top: 0;
   background: #f8f8f8;
   z-index: 1;
+}
+
+.booked-court-cell{
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.available-court-cell {
+  background-color: #e8f5e9; /* light green */
+  color: #2e7d32;            /* darker green text */
+  transition: background-color 0.3s ease;
+}
+
+.available-court-cell:hover {
+  background-color: #d0f0d8; /* even lighter green on hover */
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+}
+
+.gradient-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid transparent;
+  border-top: 4px solid #4e54c8;
+  border-right: 4px solid #8f94fb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
 }

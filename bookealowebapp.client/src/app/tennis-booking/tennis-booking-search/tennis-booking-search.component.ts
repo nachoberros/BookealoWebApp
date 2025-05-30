@@ -14,7 +14,7 @@ export class TennisBookingSearchComponent {
 
   constructor(private fb: FormBuilder) {
     this.searchForm = this.fb.group({
-      date: [new Date().toISOString().split('T')[0]]
+      date: [this.formatDate(new Date())]
     });
   }
 
@@ -23,6 +23,11 @@ export class TennisBookingSearchComponent {
   @Output() search = new EventEmitter<string>();
 
   onSearch() {
-    this.search.emit(this.date);
+    const selectedDate = this.searchForm.value.date;
+    this.search.emit(selectedDate);
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 }

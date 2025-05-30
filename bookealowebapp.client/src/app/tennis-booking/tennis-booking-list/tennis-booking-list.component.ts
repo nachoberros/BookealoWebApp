@@ -11,6 +11,7 @@ import { Court } from '../tennis-booking-model';
 })
 export class TennisBookingListComponent {
   @Input() courts: any[] = [];
+  @Input() isLoading: boolean = true;
 
   timeSlots: string[] = [];
 

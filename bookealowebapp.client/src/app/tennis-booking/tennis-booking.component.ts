@@ -13,11 +13,21 @@ import { Court } from './tennis-booking-model'; // Adjust path as needed
 })
 export class TennisBookingComponent {
   results: Court[] = [];
+  loading: boolean = true;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   onSearch(date: string) {
-    this.http.get<Court[]>(`/api/tennisbooking?date=${date}`)
-      .subscribe(data => this.results = data);
+    this.loading = true;
+    this.http.get<Court[]>(`/api/tennisbooking?date=${date}`).subscribe({
+      next: data => {
+        this.results = data;
+        setTimeout(() => this.loading = false, 500);
+      },
+      error: error => {
+        console.error('Failed to fetch court data', error);
+        this.loading = false;
+      }
+    });
   }
 }

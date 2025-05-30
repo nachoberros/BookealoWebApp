@@ -1,6 +1,10 @@
 @if(courts.length > 0)
 {
-<table class="booking-grid">
+  <div *ngIf="isLoading" class="loading-container">
+  <div class="gradient-spinner"></div>
+</div>
+<div *ngIf="!isLoading">
+  <table class="booking-grid">
   <thead>
     <tr>
       <th>Time</th>
@@ -10,12 +14,15 @@
   <tbody>
     <tr *ngFor="let time of timeSlots">
       <td>{{ time }}</td>
-      <td *ngFor="let court of courts">
+      <td *ngFor="let court of courts" [ngClass]="{
+      'booked-court-cell': getBookingName(court, time),
+      'available-court-cell': !getBookingName(court, time)}">
         {{ getBookingName(court, time) || '' }}
       </td>
     </tr>
   </tbody>
 </table>
+</div>
 }@else{
-    <p>No bookings found. Try searching above.</p>
+<p class="booking-grid">No bookings found. Try searching above.</p>
 }

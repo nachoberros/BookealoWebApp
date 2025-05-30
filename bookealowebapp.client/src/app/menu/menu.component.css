@@ -1,7 +1,13 @@
 .navbar {
-  background-color: #1f1f1f;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  padding: 1rem 2rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .nav-container {
@@ -20,14 +26,15 @@
 }
 
 .nav-links a {
-  color: #ccc;
-  margin-left: 1.5rem;
+  color: white;
   text-decoration: none;
-  transition: color 0.3s ease;
+  margin-left: 1.5rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .nav-links a:hover {
-  color: #fff;
+  color: #dcdcff;
 }
 
 .active-link {

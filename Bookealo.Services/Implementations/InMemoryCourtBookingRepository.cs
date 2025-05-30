@@ -32,7 +32,7 @@ namespace Bookealo.Services.Implementations
             {
                 ID = 1,
                 Name = "Court 1",
-                Description = "Clay court",
+                Description = "Clay",
                 Bookings =
                 [
                      new() { ID = 1, Date = DateTime.Today.AddHours(18), UserName = "Alice" },
@@ -45,11 +45,33 @@ namespace Bookealo.Services.Implementations
             {
                 ID = 2,
                 Name = "Court 2",
-                Description = "Hard court",
+                Description = "Hard",
                 Bookings =
                 [
                     new() { ID = 5, Date = DateTime.Today.AddHours(18), UserName = "Charlie" },
                     new() { ID = 6, Date = DateTime.Today.AddHours(18), UserName = "Bob" }
+                ]
+            },
+         new Court
+            {
+                ID = 3,
+                Name = "Court 3",
+                Description = "Grass",
+                Bookings =
+                [
+                    new() { ID = 7, Date = DateTime.Today.AddHours(17), UserName = "Mike" },
+                    new() { ID = 8, Date = DateTime.Today.AddHours(14), UserName = "Bob" }
+                ]
+            },
+         new Court
+            {
+                ID = 4,
+                Name = "Court 4",
+                Description = "Clay",
+                Bookings =
+                [
+                    new() { ID = 9, Date = DateTime.Today.AddHours(17), UserName = "Alice" },
+                    new() { ID = 10, Date = DateTime.Today.AddHours(14), UserName = "Charlie" }
                 ]
             }];
     }
