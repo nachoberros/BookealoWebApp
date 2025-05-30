@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 export class MenuComponent {
   menuItems = [
     { label: 'Home', route: '/' },
-    { label: 'About', route: '/about' }
+    { label: 'About', route: '/about' },
+    {label: 'Tennis', route: '/tennis'}
   ];
 }

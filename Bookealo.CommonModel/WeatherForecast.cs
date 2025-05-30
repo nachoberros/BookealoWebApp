@@ -1,4 +1,4 @@
-namespace BookealoWebApp.Server
+namespace Bookealo.CommonModel
 {
     public class WeatherForecast
     {

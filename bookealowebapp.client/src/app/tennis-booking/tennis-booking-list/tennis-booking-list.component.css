@@ -1,0 +1,37 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+}
+
+th {
+  background-color: #f0f0f0;
+  text-align: left;
+}
+
+.booking-grid {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: center;
+}
+
+.booking-grid th,
+.booking-grid td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+
+.booking-grid td {
+  min-width: 100px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: #f8f8f8;
+  z-index: 1;
+}

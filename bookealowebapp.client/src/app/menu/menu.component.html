@@ -1,9 +1,16 @@
 <nav class="menu">
   <ul>
-    @for (menuItem of menuItems; track menuItem.label) {
-      <li>
-        <a [attr.href]="menuItem.route">{{ menuItem.label }}</a>
-      </li>
-    }
+  
   </ul>
+</nav>
+
+<nav class="navbar">
+  <div class="nav-container">
+    <a class="nav-logo" routerLink="/">🗓️ Bookealo</a>
+    <div class="nav-links">
+        @for (menuItem of menuItems; track menuItem.label) {
+          <a [attr.href]="menuItem.route" routerLinkActive="active-link">{{ menuItem.label }}</a>
+      }
+    </div>
+  </div>
 </nav>

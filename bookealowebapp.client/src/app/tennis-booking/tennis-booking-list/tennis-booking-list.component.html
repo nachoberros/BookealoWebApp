@@ -1,0 +1,21 @@
+@if(courts.length > 0)
+{
+<table class="booking-grid">
+  <thead>
+    <tr>
+      <th>Time</th>
+      <th *ngFor="let court of courts">{{ court.name }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let time of timeSlots">
+      <td>{{ time }}</td>
+      <td *ngFor="let court of courts">
+        {{ getBookingName(court, time) || '' }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+}@else{
+    <p>No bookings found. Try searching above.</p>
+}
