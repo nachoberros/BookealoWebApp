@@ -1,0 +1,9 @@
+<nav class="menu">
+  <ul>
+    @for (menuItem of menuItems; track menuItem.label) {
+      <li>
+        <a [attr.href]="menuItem.route">{{ menuItem.label }}</a>
+      </li>
+    }
+  </ul>
+</nav>
