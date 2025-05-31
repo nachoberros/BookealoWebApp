@@ -1,4 +1,4 @@
-import { User } from "../services/user.service";
+import { User } from "../services/auth.service";
 
 export interface CourtBooking {
     id: number;

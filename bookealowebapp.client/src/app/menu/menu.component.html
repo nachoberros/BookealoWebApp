@@ -4,11 +4,17 @@
 
     <div class="nav-links">
       @for (menuItem of menuItems; track menuItem.label) {
-        <a [attr.href]="menuItem.route" routerLinkActive="active-link">{{ menuItem.label }}</a>
+      <a [attr.href]="menuItem.route" routerLinkActive="active-link">{{ menuItem.label }}</a>
       }
     </div>
+
   </div>
-      <div class="user-label">
-      👤 Logged in as <strong>{{ currentUser?.name }}</strong>
+  <div class="user-menu" (click)="toggleMenu()" [class.open]="showUserMenu">
+    👤 Logged in as <strong>{{ currentUser?.name }}</strong>
+
+    <div class="user-submenu" *ngIf="showUserMenu">
+      <button (click)="logout()">🚪 Log out</button>
+      <!-- Add more items here if needed -->
     </div>
+  </div>
 </nav>

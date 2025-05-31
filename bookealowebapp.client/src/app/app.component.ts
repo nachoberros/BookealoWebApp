@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { MenuComponent } from "./menu/menu.component";
 
 @Component({
@@ -8,4 +8,10 @@ import { MenuComponent } from "./menu/menu.component";
   templateUrl: './app.component.html',
   imports: [MenuComponent, RouterOutlet]
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(public router: Router) { }
+
+ showMenu(): boolean {
+    return !!localStorage.getItem('jwtToken');
+  }
+}

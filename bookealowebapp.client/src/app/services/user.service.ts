@@ -1,23 +1,31 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable  } from "rxjs";
-
-export interface User {
-  id: number;
-  name: string;
-}
+import { User } from "./auth.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$: Observable<User | null> = this.currentUserSubject.asObservable();
+  private currentUser: User | null = null;
+  private storageKey = 'currentUser';
+
+  constructor() {
+    const storedUser = localStorage.getItem(this.storageKey);
+    if (storedUser) {
+      this.currentUser = JSON.parse(storedUser);
+    }
+  }
 
   setCurrentUser(user: User): void {
-    this.currentUserSubject.next(user);
+    this.currentUser = user;
+    localStorage.setItem(this.storageKey, JSON.stringify(user));
   }
 
   getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+    return this.currentUser;
+  }
+
+  clearCurrentUser(): void {
+    this.currentUser = null;
+    localStorage.removeItem(this.storageKey);
   }
 }

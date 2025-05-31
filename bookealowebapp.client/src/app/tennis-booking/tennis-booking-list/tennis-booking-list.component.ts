@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Court, SlotDetail } from '../tennis-booking-model';
-import { User, UserService } from '../../services/user.service';
+import { UserService } from '../../services/user.service';
 import { HttpClient } from '@angular/common/http';
+import { User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-tennis-booking-list',
@@ -38,9 +39,7 @@ export class TennisBookingListComponent {
       this.timeSlots.push(time); // e.g. "10:00"
     }
 
-    this.userService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
+    this.currentUser = this.userService.getCurrentUser();
   }
 
 

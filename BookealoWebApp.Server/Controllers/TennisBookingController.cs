@@ -1,9 +1,11 @@
 using Bookealo.CommonModel;
 using Bookealo.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookealoWebApp.Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class TennisBookingController : ControllerBase
@@ -45,6 +47,7 @@ namespace BookealoWebApp.Server.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "CanManageAsset")]
         [HttpPut("block")]
         public IActionResult Block([FromBody] BookingRequest booking)
         {
@@ -52,6 +55,7 @@ namespace BookealoWebApp.Server.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = "CanManageAsset")]
         [HttpPut("unblock")]
         public IActionResult Unblock([FromBody] BookingRequest booking)
         {
