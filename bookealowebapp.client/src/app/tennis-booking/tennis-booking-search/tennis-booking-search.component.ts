@@ -18,7 +18,7 @@ export class TennisBookingSearchComponent {
     });
   }
 
-  date: string = new Date().toISOString().split('T')[0];
+  date: string = new Date().toLocaleDateString('sv-SE');
 
   @Output() search = new EventEmitter<string>();
 
@@ -28,6 +28,6 @@ export class TennisBookingSearchComponent {
   }
 
   private formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    return date.toLocaleDateString('sv-SE');
   }
 }

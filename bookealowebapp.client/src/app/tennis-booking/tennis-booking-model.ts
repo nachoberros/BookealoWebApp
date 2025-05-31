@@ -6,9 +6,16 @@ export interface CourtBooking {
     user: User;
 }
 
+export interface SlotDetail {
+    description: string;
+    isBooked: boolean;
+    isBlocked: boolean;
+}
+
 export interface Court {
     id: number;
     name: string;
     description: string;
     bookings: CourtBooking[];
+    blockings: CourtBooking[];
 }

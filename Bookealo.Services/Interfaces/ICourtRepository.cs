@@ -7,5 +7,8 @@ namespace Bookealo.Services.Interfaces
         List<Court> GetAll();
         List<Court> Search(DateTime? date);
         void Save(BookingRequest booking);
+        void Cancel(BookingRequest booking);
+        void Block(BookingRequest booking);
+        void Unblock(BookingRequest booking);
     }
 }

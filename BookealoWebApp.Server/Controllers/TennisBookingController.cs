@@ -30,5 +30,33 @@ namespace BookealoWebApp.Server.Controllers
             _courtRepository.Save(booking);
             return Ok();
         }
+
+        [HttpDelete]
+        public IActionResult Cancel([FromQuery] int courtId, [FromQuery] DateTime date, [FromQuery] int userId)
+        {
+            var booking = new BookingRequest
+            {
+                CourtId = courtId,
+                Date = date,
+                UserId = userId
+            };
+
+            _courtRepository.Cancel(booking);
+            return Ok();
+        }
+
+        [HttpPut("block")]
+        public IActionResult Block([FromBody] BookingRequest booking)
+        {
+            _courtRepository.Block(booking);
+            return Ok();
+        }
+
+        [HttpPut("unblock")]
+        public IActionResult Unblock([FromBody] BookingRequest booking)
+        {
+            _courtRepository.Unblock(booking);
+            return Ok();
+        }
     }
 }
