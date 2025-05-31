@@ -1,0 +1,20 @@
+<div class="calendar-list">
+  <h2>Calendars</h2>
+  <table class="calendar-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th style="width: 150px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let calendar of calendars">
+        <td>{{ calendar.name }}</td>
+        <td>
+          <button (click)="editCalendar(calendar)">Edit</button>
+          <button (click)="deleteCalendar(calendar)" class="danger">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

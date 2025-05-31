@@ -1,4 +1,4 @@
-using Bookealo.CommonModel;
+using Bookealo.CommonModel.TennisBooking;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

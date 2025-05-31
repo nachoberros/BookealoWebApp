@@ -32,7 +32,7 @@ export class MenuComponent implements OnInit {
 
   menuItems = [
     { label: 'Home', route: '/home' },
-    { label: 'About', route: '/about' },
+    { label: 'Calendars', route: '/calendars' },
     { label: 'Tennis', route: '/tennis' }
   ];
 }

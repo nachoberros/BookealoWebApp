@@ -1,4 +1,6 @@
-﻿namespace Bookealo.CommonModel
+﻿using Bookealo.CommonModel.Users;
+
+namespace Bookealo.CommonModel.TennisBooking
 {
     public class CourtBooking
     {

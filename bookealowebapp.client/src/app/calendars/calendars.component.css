@@ -1,0 +1,30 @@
+.calendar-list {
+  padding: 16px;
+}
+
+.calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-table th,
+.calendar-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.calendar-table th {
+  background-color: #f0f0f0;
+}
+
+button {
+  margin-right: 8px;
+  padding: 4px 8px;
+}
+
+button.danger {
+  color: white;
+  background-color: crimson;
+  border: none;
+}

@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddSingleton<ICourtRepository, InMemoryCourtRepository>();
+builder.Services.AddSingleton<ICalendarRepository, CalendarRepository>();
+builder.Services.AddSingleton<IMockingRepository, MockingRepository>();
 builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -42,6 +44,10 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanManageAsset", policy =>
         policy.RequireClaim("permission", "BookealoAdmin", "Owner", "Admin"));
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("CanManageCalendar", policy =>
+        policy.RequireClaim("permission", "BookealoAdmin", "Owner"));
 
 var app = builder.Build();
 

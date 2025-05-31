@@ -1,4 +1,4 @@
-﻿using Bookealo.CommonModel;
+﻿using Bookealo.CommonModel.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

@@ -1,4 +1,4 @@
-﻿namespace Bookealo.CommonModel
+﻿namespace Bookealo.CommonModel.TennisBooking
 {
     public class BookingRequest
     {
