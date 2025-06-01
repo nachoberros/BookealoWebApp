@@ -1,4 +1,6 @@
 ﻿using Bookealo.CommonModel.Users;
+using Bookealo.Services.Implementations;
+using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,10 +13,12 @@ namespace BookealoWebApp.Server.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+    private readonly IUserRepository _userRepository;
     private readonly IConfiguration _configuration;
 
-    public AuthController(IConfiguration configuration)
+    public AuthController(IUserRepository userRepository, IConfiguration configuration)
     {
+        _userRepository = userRepository;
         _configuration = configuration;
     }
 
@@ -26,7 +30,8 @@ public class AuthController : ControllerBase
             var user = GetUserByEmail(request.Email);
             if (user != null)
             {
-                var token = GenerateJwtToken(user);
+                var account = _userRepository.GetDefaultAccount(user.Email);
+                var token = GenerateJwtToken(account.Id, user);
                 return Ok(new { token, user });
             }
         }
@@ -34,7 +39,7 @@ public class AuthController : ControllerBase
         return Unauthorized("Invalid username or password");
     }
 
-    private string GenerateJwtToken(User user)
+    private string GenerateJwtToken(int accountId, User user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -42,14 +47,12 @@ public class AuthController : ControllerBase
         var claims = new List<Claim>
         {
             new(ClaimTypes.Email, user.Email),
-            new(ClaimTypes.Name, user.Name)
+            new(ClaimTypes.Name, user.Name),
         };
 
-        foreach (var permission in user.Permissions)
-        {
-            claims.Add(new Claim("permission", permission.ToString()));
-        }
-
+        claims.Add(new Claim("permission", user.Permission.ToString()));
+        claims.Add(new Claim("accountId", accountId.ToString()));
+        
         var token = new JwtSecurityToken(
             _configuration["Jwt:Issuer"],
             _configuration["Jwt:Issuer"],
@@ -66,10 +69,10 @@ public class AuthController : ControllerBase
         {
             return new User()
             {
-                ID = 4,
+                Id = 4,
                 Name = "Charlie",
                 Email = "andresberros@gmail.com",
-                Permissions = [Permission.BookealoAdmin]
+                Permission = Permission.BookealoAdmin
             };
         }
 

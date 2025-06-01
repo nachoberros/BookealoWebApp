@@ -1,21 +1,23 @@
+﻿using Bookealo.CommonModel.Users;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Calendar = Bookealo.CommonModel.Calendars.Calendar;
 
 namespace BookealoWebApp.Server.Controllers
 {
-    [Authorize(Policy = "CanManageCalendar")]
+    [Authorize(Policy = "CanManageUser")]
     [ApiController]
     [Route("api/[controller]")]
-    public class CalendarController : ControllerBase
+    public class AssetController : ControllerBase
     {
-        private readonly ICalendarRepository _calendarRepository;
-        private readonly ILogger<CalendarController> _logger;
+        private readonly IAssetRepository _assetRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ILogger<AssetController> _logger;
 
-        public CalendarController(ICalendarRepository calendarRepository, ILogger<CalendarController> logger)
+        public AssetController(IAssetRepository assetRepository, IUserRepository userRepository, ILogger<AssetController> logger)
         {
-            _calendarRepository = calendarRepository;
+            _assetRepository = assetRepository;
+            _userRepository = userRepository;
             _logger = logger;
         }
 
@@ -28,12 +30,12 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            var results = _calendarRepository.GetCalendars(accountId);
+            var results = _userRepository.GetUsers(accountId);
             return Ok(results);
         }
 
         [HttpPost]
-        public IActionResult Save([FromBody] Calendar calendar)
+        public IActionResult Save([FromBody] User user)
         {
             var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
             if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
@@ -41,12 +43,12 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            _calendarRepository.AddCalendar(accountId, calendar);
+            _userRepository.AddUser(accountId, user);
             return Ok();
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Calendar calendar)
+        public IActionResult Update([FromBody] User user)
         {
             var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
             if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
@@ -54,7 +56,7 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            _calendarRepository.UpdateCalendar(accountId, calendar);
+            _userRepository.UpdateUser(accountId, user);
             return Ok();
         }
 
@@ -67,13 +69,13 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            var calendar = _calendarRepository.GetCalendarById(accountId, id);
-            if(calendar == null)
+            var user = _userRepository.GetUserById(accountId, id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            _calendarRepository.RemoveCalendar(accountId, calendar);
+            _userRepository.RemoveUser(accountId, user);
 
             return Ok();
         }

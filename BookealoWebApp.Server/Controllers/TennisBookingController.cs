@@ -1,3 +1,4 @@
+using Bookealo.CommonModel.Account;
 using Bookealo.CommonModel.TennisBooking;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -20,9 +21,15 @@ namespace BookealoWebApp.Server.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery] DateTime? date)
+        public IActionResult GetAll([FromQuery]int calendarId, DateTime? date)
         {
-            var results = _courtRepository.Search(date);
+            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
+            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
+            {
+                return Unauthorized("Account Id claim not found.");
+            }
+
+            var results = _courtRepository.Search(accountId, calendarId, date);
             return Ok(results);
         }
 
@@ -38,7 +45,7 @@ namespace BookealoWebApp.Server.Controllers
         {
             var booking = new BookingRequest
             {
-                CourtId = courtId,
+                AssetId = courtId,
                 Date = date,
                 UserId = userId
             };

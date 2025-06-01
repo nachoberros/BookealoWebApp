@@ -1,11 +1,8 @@
+using Bookealo.CommonModel.Assets;
+
 namespace Bookealo.CommonModel.TennisBooking
 {
-    public class Court
+    public class Court : Asset
     {
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public List<CourtBooking> Bookings { get; set; }
-        public List<CourtBooking> Blockings { get; set; }
     }
 }

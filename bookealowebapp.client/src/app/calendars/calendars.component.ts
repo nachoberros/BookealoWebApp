@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { Calendar } from './candelars.model';
+import { Calendar, CalendarType } from './candelars.model';
 import { HttpClient } from '@angular/common/http';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-calendars',
@@ -12,22 +12,17 @@ import { HttpClient } from '@angular/common/http';
     styleUrls: ['./calendars.component.css']
 })
 export class CalendarsComponent implements OnInit {
+    public CalendarType = CalendarType;
     calendars: Calendar[] = [];
     loading: boolean = false;
 
-    constructor(private http: HttpClient, private router: Router) { }
+    constructor(
+        private http: HttpClient,
+        private router: Router
+    ) { }
+
     ngOnInit(): void {
-        this.loading = true;
-        this.http.get<Calendar[]>(`/api/calendar`).subscribe({
-            next: data => {
-                this.calendars = data;
-                setTimeout(() => this.loading = false, 500);
-            },
-            error: error => {
-                console.error('Failed to fetch court data', error);
-                this.loading = false;
-            }
-        });
+        this.refreshCalendars();
     }
 
     editCalendar(calendar: Calendar) {
@@ -36,23 +31,16 @@ export class CalendarsComponent implements OnInit {
     }
 
     deleteCalendar(calendar: Calendar) {
-
         if (!calendar) return;
 
-        if (confirm('Are you sure you want to delete "${calendar.name}"?')) {
+        if (confirm(`Are you sure you want to delete "${calendar.name}"?`)) {
             this.calendars = this.calendars.filter(c => c.id !== calendar.id);
 
-            const params = {
-                id: calendar.id
-            };
+            const params = { id: calendar.id };
 
             this.http.delete('/api/calendar', { params }).subscribe({
-                next: () => {
-                    this.refreshCalendars();
-                },
-                error: (err: any) => {
-                    console.error('Calendar deletion failed', err);
-                }
+                next: () => this.refreshCalendars(),
+                error: err => console.error('Calendar deletion failed', err)
             });
         }
     }

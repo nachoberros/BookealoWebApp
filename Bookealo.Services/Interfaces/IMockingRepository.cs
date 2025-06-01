@@ -1,4 +1,6 @@
-﻿using Bookealo.CommonModel.Calendars;
+﻿using Bookealo.CommonModel.Account;
+using Bookealo.CommonModel.Assets;
+using Bookealo.CommonModel.Calendars;
 using Bookealo.CommonModel.TennisBooking;
 using Bookealo.CommonModel.Users;
 
@@ -6,16 +8,24 @@ namespace Bookealo.Services.Interfaces
 {
     public interface IMockingRepository
     {
-        List<Court> GetBookingsByCourt();
-        List<User> GetUsers();
-
-        void AddBooking(int userId, int courtId, DateTime date);
-        void CancelBooking(int userId, int courtId, DateTime date);
-        void BlockSlot(int userId, int courtId, DateTime date);
-        void UnblockSlot(int userId, int courtId, DateTime date);
-        void AddCalendar(Calendar calendar);
-        void RemoveCalendar(Calendar calendar);
-        void UpdateCalendar(Calendar calendar);
-        List<Calendar> GetCalendars(string userEmail);
+        List<Court> GetCourts(int accountId, int calendarId);
+        void AddBooking(BookingRequest bookingRequest);
+        void CancelBooking(BookingRequest bookingRequest);
+        void BlockSlot(BookingRequest bookingRequest);
+        void UnblockSlot(BookingRequest bookingRequest);
+        List<Calendar> GetCalendars(int accountId);
+        List<User> GetUsers(int accountId);
+        void AddCalendar(int accountId, Calendar calendar);
+        void RemoveCalendar(int accountId, Calendar calendar);
+        void UpdateCalendar(int accountId, Calendar calendar);
+        void UpdateUser(int accountId, User user);
+        void RemoveUser(int accountId, User user);
+        void AddUser(int accountId, User user);
+        List<Asset> GetAssets(int accountId);
+        void UpdateAsset(int accountId, Asset asset);
+        void RemoveAsset(int accountId, Asset asset);
+        void AddAsset(int accountId, Asset asset);
+        bool IsValidAccount(int accountId, string email);
+        Account GetDefaultAccount(string email);
     }
 }

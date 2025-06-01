@@ -12,29 +12,29 @@ namespace Bookealo.Services.Implementations
             _mockingRepository = mockingRepository;
         }
 
-        public List<Calendar> GetCalendars(string userEmail)
+        public List<Calendar> GetCalendars(int accountId)
         {
-            return _mockingRepository.GetCalendars(userEmail);
+            return _mockingRepository.GetCalendars(accountId);
         }
 
-        public void UpdateCalendar(Calendar calendar)
+        public void UpdateCalendar(int accountId, Calendar calendar)
         {
-            _mockingRepository.UpdateCalendar(calendar);
+            _mockingRepository.UpdateCalendar(accountId, calendar);
         }
 
-        public Calendar? GetCalendarById(string userEmail, int calendarID)
+        public Calendar? GetCalendarById(int accountId, int calendarID)
         {
-            return _mockingRepository.GetCalendars(userEmail).FirstOrDefault(c => c.Id == calendarID);
+            return _mockingRepository.GetCalendars(accountId).FirstOrDefault(c => c.Id == calendarID);
         }
 
-        public void RemoveCalendar(Calendar calendar)
+        public void RemoveCalendar(int accountId, Calendar calendar)
         {
-            _mockingRepository.RemoveCalendar(calendar);
+            _mockingRepository.RemoveCalendar(accountId, calendar);
         }
 
-        public void AddCalendar(Calendar calendar)
+        public void AddCalendar(int accountId, Calendar calendar)
         {
-            _mockingRepository.AddCalendar(calendar);
+            _mockingRepository.AddCalendar(accountId, calendar);
         }
     }
 }

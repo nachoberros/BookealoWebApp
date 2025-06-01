@@ -4,10 +4,10 @@ namespace Bookealo.Services.Interfaces
 {
     public interface ICalendarRepository
     {
-        List<Calendar> GetCalendars(string userEmail);
-        void UpdateCalendar(Calendar calendar);
-        void RemoveCalendar(Calendar calendar);
-        void AddCalendar(Calendar calendar);
-        Calendar? GetCalendarById(string userEmail, int calendarID);
+        List<Calendar> GetCalendars(int accountId);
+        void UpdateCalendar(int accountId, Calendar calendar);
+        void RemoveCalendar(int accountId, Calendar calendar);
+        void AddCalendar(int accountId, Calendar calendar);
+        Calendar? GetCalendarById(int accountId, int calendarID);
     }
 }

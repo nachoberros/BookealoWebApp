@@ -15,29 +15,29 @@ namespace Bookealo.Services.Implementations
 
         public void Save(BookingRequest booking)
         {
-            _mockingRepository.AddBooking(booking.UserId ?? 0, booking.CourtId, booking.Date);
+            _mockingRepository.AddBooking(booking);
         }
 
         public void Cancel(BookingRequest booking)
         {
-            _mockingRepository.CancelBooking(booking.UserId ?? 0, booking.CourtId, booking.Date);
+            _mockingRepository.CancelBooking(booking);
         }
 
         public void Block(BookingRequest booking)
         {
-            _mockingRepository.BlockSlot(booking.UserId ?? 0, booking.CourtId, booking.Date);
+            _mockingRepository.BlockSlot(booking);
         }
 
         public void Unblock(BookingRequest booking)
         {
-            _mockingRepository.UnblockSlot(booking.UserId ?? 0, booking.CourtId, booking.Date);
+            _mockingRepository.UnblockSlot(booking);
         }
 
-        public List<Court> Search(DateTime? date)
+        public List<Court> Search(int accountId, int calendarId, DateTime? date)
         {
-            return _mockingRepository.GetBookingsByCourt().Select(c => new Court
+            return _mockingRepository.GetCourts(accountId, calendarId).Select(c => new Court
             {
-                ID = c.ID,
+                Id = c.Id,
                 Name = c.Name,
                 Description = c.Description,
                 Bookings = c.Bookings

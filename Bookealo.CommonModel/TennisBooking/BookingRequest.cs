@@ -2,7 +2,9 @@
 {
     public class BookingRequest
     {
-        public int CourtId { get; set; }
+        public int AccountId { get; set; }
+        public int AssetId { get; set; }
+        public int CalendarId { get; set; }
         public DateTime Date { get; set; }
         public int? UserId { get; set; }
     }

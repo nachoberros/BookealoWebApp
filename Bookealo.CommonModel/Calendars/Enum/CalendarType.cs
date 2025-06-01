@@ -1,9 +1,9 @@
 ﻿namespace Bookealo.CommonModel.Calendars.Enum
 {
-    public enum AssetType
+    public enum CalendarType
     {
-        TennisCourt,
-        BarberSeat,
-        Vehicle
+        Tennis,
+        Barber,
+        CarRental
     }
 }

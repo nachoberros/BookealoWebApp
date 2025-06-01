@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface User {
   id: number;
   name: string;
   email?: string;
-  roles?: string[];
+  permission: string;
 }
 
 @Injectable({

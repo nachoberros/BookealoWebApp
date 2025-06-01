@@ -4,7 +4,7 @@ namespace Bookealo.Services.Interfaces
 {
     public interface ICourtRepository
     {
-        List<Court> Search(DateTime? date);
+        List<Court> Search(int accountId, int calendarId, DateTime? date);
         void Save(BookingRequest booking);
         void Cancel(BookingRequest booking);
         void Block(BookingRequest booking);

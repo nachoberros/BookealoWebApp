@@ -1,64 +1,67 @@
-﻿using Bookealo.CommonModel.Calendars.Enum;
-using Bookealo.CommonModel.Calendars;
-using Bookealo.CommonModel.TennisBooking;
+﻿using Bookealo.CommonModel.TennisBooking;
 using Bookealo.CommonModel.Users;
 using Bookealo.Services.Interfaces;
 using Calendar = Bookealo.CommonModel.Calendars.Calendar;
+using Bookealo.CommonModel.Account;
+using Bookealo.CommonModel.Calendars.Enum;
+using Bookealo.CommonModel.Assets;
+using Bookealo.CommonModel;
 
 namespace Bookealo.Services.Implementations
 {
     public class MockingRepository : IMockingRepository
     {
+        private List<Account> _accounts = [];
 
         public MockingRepository()
         {
-            _users = GetMockedUsers();
-            _courts = GetMockedTennisCourtBookings();
-            _calendars = GetMockedCalendars();
+            _accounts = [InitializeMockedAccount()];
         }
 
-        private List<User> _users = [];
-        private List<Court> _courts = [];
-        private List<Calendar> _calendars = [];
-
-        public List<Court> GetBookingsByCourt()
+        public List<Court> GetCourts(int accountId, int calendarId)
         {
-            return _courts;
-        }
-
-        public void AddBooking(int userId, int courtId, DateTime date)
-        {
-            var court = GetBookingsByCourt().FirstOrDefault(c => c.ID == courtId);
-            if (court == null)
+            var courts = _accounts.FirstOrDefault(a => a.Id == accountId)?.Calendars.FirstOrDefault(c => c.Id == calendarId)?.Assets.Cast<Court>().ToList();
+            if (courts == null || courts.Count < 1)
             {
-                throw new InvalidOperationException($"Court with ID {courtId} not found.");
+                return new List<Court>() { };
             }
 
-            var slot = court.Bookings.FirstOrDefault(b => b.Date == date);
+            return courts;
+        }
+
+        public void AddBooking(BookingRequest bookingRequest)
+        {
+            var court = GetCourts(bookingRequest.AccountId, bookingRequest.CalendarId).FirstOrDefault(c => c.Id == bookingRequest.AssetId);
+            if (court == null)
+            {
+                throw new InvalidOperationException($"Court with ID {bookingRequest.AssetId} not found.");
+            }
+
+            var slot = court.Bookings.FirstOrDefault(b => b.Date == bookingRequest.Date);
             if (slot != null)
             {
                 throw new InvalidOperationException("This time slot is already booked.");
             }
 
-            var newBooking = new CourtBooking
+            var newBooking = new AssetBooking
             {
                 ID = GenerateBookingId(),
-                Date = date,
-                User = GetUser(userId)
+                Date = bookingRequest.Date,
+                User = GetUser(bookingRequest.UserId)
             };
 
             court.Bookings.Add(newBooking);
         }
 
-        public void CancelBooking(int userId, int courtId, DateTime date)
+        public void CancelBooking(BookingRequest bookingRequest)
         {
-            var court = GetBookingsByCourt().FirstOrDefault(c => c.ID == courtId);
+            var court = GetCourts(bookingRequest.AccountId, bookingRequest.CalendarId).FirstOrDefault(c => c.Id == bookingRequest.AssetId);
             if (court == null)
             {
-                throw new InvalidOperationException($"Court with ID {courtId} not found.");
+                throw new InvalidOperationException($"Court with ID {bookingRequest.AssetId} not found.");
             }
 
-            var slot = court.Bookings.FirstOrDefault(b => b.Date == date);
+            var slot = court.Bookings.FirstOrDefault(b => b.Date == bookingRequest.Date);
             if (slot == null)
             {
                 throw new InvalidOperationException("This time slot is already empty.");
@@ -67,121 +70,285 @@ namespace Bookealo.Services.Implementations
             court.Bookings.Remove(slot);
         }
 
-        public void BlockSlot(int userId, int courtId, DateTime date)
+        public void BlockSlot(BookingRequest bookingRequest)
         {
-            var court = GetBookingsByCourt().FirstOrDefault(c => c.ID == courtId);
+            var court = GetCourts(bookingRequest.AccountId, bookingRequest.CalendarId).FirstOrDefault(c => c.Id == bookingRequest.AssetId);
             if (court == null)
             {
-                throw new InvalidOperationException($"Court with ID {courtId} not found.");
+                throw new InvalidOperationException($"Court with ID {bookingRequest.AssetId} not found.");
             }
 
-            bool isSlotTaken = court.Bookings.Any(b => b.Date == date);
+            bool isSlotTaken = court.Bookings.Any(b => b.Date == bookingRequest.Date);
             if (isSlotTaken)
             {
                 throw new InvalidOperationException("This time slot is already booked.");
             }
 
-            bool isAlreadyBlocked = court.Blockings.Any(b => b.Date == date);
+            bool isAlreadyBlocked = court.Blockings.Any(b => b.Date == bookingRequest.Date);
             if (isAlreadyBlocked)
             {
                 throw new InvalidOperationException("This time slot is already blocked.");
             }
 
-            var newBlocking = new CourtBooking
+            var newBlocking = new AssetBooking
             {
                 ID = GenerateBlockingId(),
-                Date = date,
-                User = GetUser(userId)
+                Date = bookingRequest.Date,
+                User = GetUser(bookingRequest.UserId)
             };
 
             court.Blockings.Add(newBlocking);
         }
 
-        public void UnblockSlot(int userId, int courtId, DateTime date)
+        public void UnblockSlot(BookingRequest bookingRequest)
         {
-            var court = GetBookingsByCourt().FirstOrDefault(c => c.ID == courtId);
+            var court = GetCourts(bookingRequest.AccountId, bookingRequest.CalendarId).FirstOrDefault(c => c.Id == bookingRequest.AssetId);
             if (court == null)
             {
-                throw new InvalidOperationException($"Court with ID {courtId} not found.");
+                throw new InvalidOperationException($"Court with ID {bookingRequest.AssetId} not found.");
             }
 
-            bool isSlotTaken = court.Bookings.Any(b => b.Date == date);
+            bool isSlotTaken = court.Bookings.Any(b => b.Date == bookingRequest.Date);
             if (isSlotTaken)
             {
                 throw new InvalidOperationException("This time slot is already booked.");
             }
 
-            var newBooking = court.Blockings.FirstOrDefault(b => b.Date == date) ?? throw new InvalidOperationException("This time slot is already unblocked.");
+            var newBooking = court.Blockings.FirstOrDefault(b => b.Date == bookingRequest.Date) ?? throw new InvalidOperationException("This time slot is already unblocked.");
 
             court.Blockings.Remove(newBooking);
         }
 
-        public List<Calendar> GetCalendars(string userEmail)
+        public List<Calendar> GetCalendars(int accountId)
         {
-            return _calendars.Where(c => c.Users.Any(u => u.Email.ToLowerInvariant().Equals(userEmail.ToLowerInvariant()))).ToList();
+            var calendars = _accounts.FirstOrDefault(a => a.Id == accountId)?.Calendars;
+            if (calendars == null)
+            {
+                return [];
+            }
+
+            return calendars;
         }
 
-        public List<User> GetUsers()
+        public List<User> GetUsers(int accountId)
         {
-            return GetMockedUsers();
+            var users = _accounts.FirstOrDefault(a => a.Id.Equals(accountId))?.Users;
+            if (users == null)
+            {
+                return [];
+            }
+
+            return users;
         }
 
-        public void AddCalendar(Calendar calendar)
+        public void AddCalendar(int accountId, Calendar calendar)
         {
-            var mockedCalendar = GetMockedCalendars().FirstOrDefault(c => c.Name.Equals(calendar.Name));
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedCalendar = account.Calendars.FirstOrDefault(c => c.Name.ToLowerInvariant().Equals(calendar.Name.ToLowerInvariant()));
             if (mockedCalendar != null)
             {
                 throw new InvalidOperationException($"Calendar with name {calendar.Name} is already in the list.");
             }
 
-            _calendars.Add(calendar);
+            account.Calendars.Add(calendar);
         }
 
-        public void RemoveCalendar(Calendar calendar)
+        public void RemoveCalendar(int accountId, Calendar calendar)
         {
-            var mockedCalendar = GetMockedCalendars().FirstOrDefault(c => c.Name.Equals(calendar.Name));
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedCalendar = account.Calendars.FirstOrDefault(c => c.Name.ToLowerInvariant().Equals(calendar.Name.ToLowerInvariant()));
             if (mockedCalendar == null)
             {
                 throw new InvalidOperationException($"Calendar with ID {calendar.Id} was not found.");
             }
 
-            _calendars.Remove(calendar);
+            account.Calendars.Remove(calendar);
         }
 
-        public void UpdateCalendar(Calendar calendar)
+        public void UpdateCalendar(int accountId, Calendar calendar)
         {
-            var mockedCalendar = GetMockedCalendars().FirstOrDefault(c => c.Name.Equals(calendar.Name)) ?? throw new InvalidOperationException($"Calendar with ID {calendar.Id} was not found.");
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new InvalidOperationException("Account was not found");
+            }
 
-            _calendars.Remove(calendar);
-            _calendars.Add(calendar);
+            var mockedCalendar = account.Calendars.FirstOrDefault(c => c.Name.ToLowerInvariant().Equals(calendar.Name.ToLowerInvariant()));
+            if (mockedCalendar == null)
+            {
+                throw new InvalidOperationException($"Calendar with ID {calendar.Id} was not found.");
+            }
+
+            account.Calendars.Remove(calendar);
+            account.Calendars.Add(calendar);
         }
 
-        private List<User> GetMockedUsers()
+        public void UpdateUser(int accountId, User user)
         {
-            return [new()
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
             {
-                ID = 1,
-                Name = "Alice",
-                Email = "alice@gmail.com"
-            },
-            new()
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedUser = account.Users.FirstOrDefault(c => c.Email.ToLowerInvariant().Equals(user.Email.ToLowerInvariant()));
+            if (mockedUser == null)
             {
-                ID = 2,
-                Name = "Bob",
-                Email = "bob@gmail.com"
-            },
-            new()
+                throw new InvalidOperationException($"User with email {user.Email} was not found.");
+            }
+
+            account.Users.Remove(user);
+            account.Users.Add(user);
+        }
+
+        public void RemoveUser(int accountId, User user)
+        {
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
             {
-                ID = 3,
-                Name = "Mike",
-                Email = "mike@gmail.com"
-            },
-            new()
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedUser = account.Users.FirstOrDefault(c => c.Email.ToLowerInvariant().Equals(user.Email.ToLowerInvariant()));
+            if (mockedUser == null)
             {
-                ID = 4,
-                Name = "Charlie",
-                Email = "andresberros@gmail.com"
-            }];
+                throw new InvalidOperationException($"User with name {user.Name} was not found.");
+            }
+
+            account.Users.Remove(user);
+        }
+
+        public void AddUser(int accountId, User user)
+        {
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedUser = account.Users.FirstOrDefault(c => c.Email.ToLowerInvariant().Equals(user.Email.ToLowerInvariant()));
+            if (mockedUser != null)
+            {
+                throw new InvalidOperationException($"User with email {user.Email} is already in the list.");
+            }
+
+            if (mockedUser != null)
+            {
+                account.Users.Add(mockedUser);
+            }
+        }
+
+        public List<Asset> GetAssets(int accountId)
+        {
+            var assets = _accounts.FirstOrDefault(a => a.Id == accountId)?.Assets;
+            if (assets == null)
+            {
+                return [];
+            }
+
+            return assets;
+        }
+
+        public void UpdateAsset(int accountId, Asset asset)
+        {
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedAsset = account.Assets.FirstOrDefault(c => c.Id == asset.Id);
+            if (mockedAsset == null)
+            {
+                throw new InvalidOperationException($"Asset with name {asset.Name} was not found.");
+            }
+
+            account.Assets.Remove(asset);
+            account.Assets.Add(asset);
+        }
+
+        public void RemoveAsset(int accountId, Asset asset)
+        {
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedAsset = account.Assets.FirstOrDefault(c => c.Id == asset.Id);
+            if (mockedAsset == null)
+            {
+                throw new InvalidOperationException($"Asset with name {asset.Name} was not found.");
+            }
+
+            account.Assets.Remove(asset);
+        }
+
+        public void AddAsset(int accountId, Asset asset)
+        {
+            var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new InvalidOperationException("Account was not found");
+            }
+
+            var mockedAsset = account.Assets.FirstOrDefault(c => c.Id == asset.Id);
+            if (mockedAsset == null)
+            {
+                throw new InvalidOperationException($"Asset with name {asset.Name} was not found.");
+            }
+
+            if (mockedAsset != null)
+            {
+                account.Assets.Add(mockedAsset);
+            }
+        }
+
+        public bool IsValidAccount(int accountId, string email)
+        {
+            var account = _accounts.FirstOrDefault(c => c.Id.Equals(accountId));
+            if (account == null)
+            {
+                throw new Exception("Account does not exist");
+            }
+
+            return account.Users.Any(u => u.Email == email);
+        }
+
+        public Account GetDefaultAccount(string email)
+        {
+            var account = _accounts.FirstOrDefault(a => a.Users.Any(u => u.Email.ToLowerInvariant().Equals(email.ToLowerInvariant())));
+            if (account == null)
+            {
+                return new Account();
+            }
+
+            return account;
+        }
+
+        private Account InitializeMockedAccount()
+        {
+            var users = GetMockedUsers();
+            var courts = GetMockedTennisCourts(users);
+            var calendars = GetMockedCalendars(users, courts.Cast<Asset>().ToList());
+
+            var charlie = users.FirstOrDefault(u => u.Name.ToLowerInvariant().Equals("charlie"));
+            if (charlie == null)
+            {
+                throw new InvalidOperationException("charlie needs to exist");
+            }
+
+            return new Account() {Id = 1, Name = "Charlies Tennis Club", Owner = charlie, Assets = courts.Cast<Asset>().ToList(), Calendars = calendars, Users = users };
         }
 
         private User GetUser(int? userId)
@@ -191,7 +358,7 @@ namespace Bookealo.Services.Implementations
                 throw new ArgumentNullException(nameof(userId), "User ID cannot be null.");
             }
 
-            var user = GetUsers().FirstOrDefault(u => u.ID == userId.Value);
+            var user = _accounts.SelectMany(a => a.Users).FirstOrDefault(u => u.Id == userId.Value);
             if (user == null)
             {
                 throw new InvalidOperationException($"User with ID {userId} not found.");
@@ -200,92 +367,118 @@ namespace Bookealo.Services.Implementations
             return user;
         }
 
-        private List<Court> GetMockedTennisCourtBookings()
+        private static List<Court> GetMockedTennisCourts(List<User> users)
         {
-            var users = GetMockedUsers();
             var alice = users.First(u => u.Name == "Alice");
             var bob = users.First(u => u.Name == "Bob");
             var mike = users.First(u => u.Name == "Mike");
             var charlie = users.First(u => u.Name == "Charlie");
 
-            List<Court> result = new()
+            List<Court> tennisCourts = new()
             {
                 new() {
-                    ID = 1,
+                    Id = 1,
                     Name = "Court 1",
                     Description = "Clay",
                     Bookings =
                     [
-                        new CourtBooking { ID = 1, Date = DateTime.Today.AddHours(18), User = alice },
-                        new CourtBooking { ID = 2, Date = DateTime.Today.AddHours(19), User = bob },
-                        new CourtBooking { ID = 3, Date = DateTime.Today.AddDays(1).AddHours(18), User = mike },
-                        new CourtBooking { ID = 4, Date = DateTime.Today.AddDays(1).AddHours(19),  User = alice}
+                        new AssetBooking { ID = 1, Date = DateTime.Today.AddHours(18), User = alice },
+                        new AssetBooking { ID = 2, Date = DateTime.Today.AddHours(19), User = bob },
+                        new AssetBooking { ID = 3, Date = DateTime.Today.AddDays(1).AddHours(18), User = mike },
+                        new AssetBooking { ID = 4, Date = DateTime.Today.AddDays(1).AddHours(19),  User = alice}
                     ],
                     Blockings =
                     [
-                        new CourtBooking { ID = 1, Date = DateTime.Today.AddHours(14), User = alice },
-                        new CourtBooking { ID = 2, Date = DateTime.Today.AddHours(15), User = bob },
-                        new CourtBooking { ID = 3, Date = DateTime.Today.AddDays(1).AddHours(14), User = mike },
-                        new CourtBooking { ID = 4, Date = DateTime.Today.AddDays(1).AddHours(15),  User = alice}
+                        new AssetBooking { ID = 1, Date = DateTime.Today.AddHours(14), User = alice },
+                        new AssetBooking { ID = 2, Date = DateTime.Today.AddHours(15), User = bob },
+                        new AssetBooking { ID = 3, Date = DateTime.Today.AddDays(1).AddHours(14), User = mike },
+                        new AssetBooking { ID = 4, Date = DateTime.Today.AddDays(1).AddHours(15),  User = alice}
                     ]
                 },
                 new() {
-                    ID = 2,
+                    Id = 2,
                     Name = "Court 2",
                     Description = "Hard",
                     Bookings =
                     [
-                        new CourtBooking { ID = 5, Date = DateTime.Today.AddHours(18), User = charlie },
-                        new CourtBooking { ID = 6, Date = DateTime.Today.AddHours(19), User = bob }
+                        new AssetBooking { ID = 5, Date = DateTime.Today.AddHours(18), User = charlie },
+                        new AssetBooking { ID = 6, Date = DateTime.Today.AddHours(19), User = bob }
                     ],
                     Blockings =
                     [
-                        new CourtBooking { ID = 5, Date = DateTime.Today.AddHours(11), User = charlie },
-                        new CourtBooking { ID = 6, Date = DateTime.Today.AddHours(12), User = bob }
+                        new AssetBooking { ID = 5, Date = DateTime.Today.AddHours(11), User = charlie },
+                        new AssetBooking { ID = 6, Date = DateTime.Today.AddHours(12), User = bob }
                     ]
                 },
                 new() {
-                    ID = 3,
+                    Id = 3,
                     Name = "Court 3",
                     Description = "Grass",
                     Bookings =
                     [
-                        new CourtBooking { ID = 7, Date = DateTime.Today.AddHours(17), User = mike },
-                        new CourtBooking { ID = 8, Date = DateTime.Today.AddHours(16), User = bob }
+                        new AssetBooking { ID = 7, Date = DateTime.Today.AddHours(17), User = mike },
+                        new AssetBooking { ID = 8, Date = DateTime.Today.AddHours(16), User = bob }
                     ],
                     Blockings =
                     [
-                        new CourtBooking { ID = 7, Date = DateTime.Today.AddHours(14), User = mike },
-                        new CourtBooking { ID = 8, Date = DateTime.Today.AddHours(15), User = bob }
+                        new AssetBooking { ID = 7, Date = DateTime.Today.AddHours(14), User = mike },
+                        new AssetBooking { ID = 8, Date = DateTime.Today.AddHours(15), User = bob }
                     ]
                 },
                 new() {
-                    ID = 4,
+                    Id = 4,
                     Name = "Court 4",
                     Description = "Clay",
                     Bookings =
                     [
-                        new CourtBooking { ID = 9, Date = DateTime.Today.AddHours(17), User = alice },
-                        new CourtBooking { ID = 10, Date = DateTime.Today.AddHours(14), User = charlie }
+                        new AssetBooking { ID = 9, Date = DateTime.Today.AddHours(17), User = alice },
+                        new AssetBooking { ID = 10, Date = DateTime.Today.AddHours(14), User = charlie }
                     ],
                     Blockings =
                     [
-                        new CourtBooking { ID = 9, Date = DateTime.Today.AddHours(11), User = alice },
-                        new CourtBooking { ID = 10, Date = DateTime.Today.AddHours(12), User = charlie }
+                        new AssetBooking { ID = 9, Date = DateTime.Today.AddHours(11), User = alice },
+                        new AssetBooking { ID = 10, Date = DateTime.Today.AddHours(12), User = charlie }
                     ]
                 }
             };
 
-            return result;
+            return tennisCourts;
         }
 
-        private List<Calendar> GetMockedCalendars()
+        private List<User> GetMockedUsers()
         {
-            var user = GetMockedUsers().FirstOrDefault(u => u.Name == "Charlie");
-            if (user == null) return new List<Calendar>();
+            return [new()
+            {
+                Id = 1,
+                Name = "Alice",
+                Email = "alice@gmail.com",
+                Permission = Permission.Admin
+            },
+            new()
+            {
+                Id = 2,
+                Name = "Bob",
+                Email = "bob@gmail.com",
+                Permission = Permission.Admin
+            },
+            new()
+            {
+                Id = 3,
+                Name = "Mike",
+                Email = "mike@gmail.com",
+                Permission = Permission.Owner
+            },
+            new()
+            {
+                Id = 4,
+                Name = "Charlie",
+                Email = "andresberros@gmail.com",
+                Permission = Permission.BookealoAdmin
+            }];
+        }
 
-            List<Asset> assets = GetCourts();
-
+        private List<Calendar> GetMockedCalendars(List<User> users, List<Asset> assets)
+        {
             return
             [
                 new Calendar
@@ -293,7 +486,7 @@ namespace Bookealo.Services.Implementations
                     Id = 101,
                     Name = "Tennis Courts Calendar",
                     Type = CalendarType.Tennis,
-                    Users = new List<User> { user },
+                    Users = users,
                     Assets = assets,
                     StartDate = DateTime.Today,
                     EndDate = DateTime.Today.AddMonths(1),
@@ -309,26 +502,14 @@ namespace Bookealo.Services.Implementations
             ];
         }
 
-        private List<Asset> GetCourts()
-        {
-            var courts = GetMockedUsers();
-            var assets = courts.Select(c => new Asset
-            {
-                Id = c.ID,
-                Name = c.Name,
-                Type = AssetType.TennisCourt
-            }).Cast<Asset>().ToList();
-            return assets;
-        }
-
         private int GenerateBookingId()
         {
-            return GetBookingsByCourt().SelectMany(c => c.Bookings).Max(b => b.ID) + 1;
+            return _accounts.SelectMany(a => a.Assets).SelectMany(c => c.Bookings).Max(b => b.ID) + 1;
         }
 
         private int GenerateBlockingId()
         {
-            return GetBookingsByCourt().SelectMany(c => c.Blockings).Max(b => b.ID) + 1;
+            return _accounts.SelectMany(a => a.Assets).SelectMany(c => c.Blockings).Max(b => b.ID) + 1;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Bookealo.CommonModel.Users;
 
-namespace Bookealo.CommonModel.TennisBooking
+namespace Bookealo.CommonModel
 {
-    public class CourtBooking
+    public class AssetBooking
     {
         public int ID { get; set; }
         public DateTime Date { get; set; }

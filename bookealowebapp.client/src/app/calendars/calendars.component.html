@@ -1,18 +1,32 @@
 <div class="calendar-list">
-  <h2>Calendars</h2>
+  <div class="calendar-header">
+    <h2>Calendars</h2>
+    <button [routerLink]="['/calendars/new']" class="new-calendar-btn">+ New Calendar</button>
+  </div>
+
   <table class="calendar-table">
     <thead>
       <tr>
         <th>Name</th>
-        <th style="width: 150px;">Actions</th>
+        <th>Type</th>
+        <th class="actions-column">Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let calendar of calendars">
         <td>{{ calendar.name }}</td>
-        <td>
-          <button (click)="editCalendar(calendar)">Edit</button>
-          <button (click)="deleteCalendar(calendar)" class="danger">Delete</button>
+        <td class="calendar-type">
+          <span [ngSwitch]="CalendarType[calendar.type]">
+            <i *ngSwitchCase="'Tennis'" class="fa-solid fa-table-tennis-paddle-ball type-icon tennis"></i>
+            <i *ngSwitchCase="'Barber'" class="fa-solid fa-scissors type-icon barber"></i>
+            <i *ngSwitchCase="'CarRental'" class="fa-solid fa-car type-icon car"></i>
+            <i *ngSwitchDefault class="fa-solid fa-calendar-days type-icon default"></i>
+          </span>
+          {{ CalendarType[calendar.type] }}
+        </td>
+        <td class="calendar-actions">
+          <button (click)="editCalendar(calendar)" class="edit-btn">Edit</button>
+          <button (click)="deleteCalendar(calendar)" class="delete-btn">Delete</button>
         </td>
       </tr>
     </tbody>

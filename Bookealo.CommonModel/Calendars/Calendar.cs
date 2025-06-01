@@ -1,4 +1,5 @@
-﻿using Bookealo.CommonModel.Calendars.Enum;
+﻿using Bookealo.CommonModel.Assets;
+using Bookealo.CommonModel.Calendars.Enum;
 using Bookealo.CommonModel.Users;
 
 namespace Bookealo.CommonModel.Calendars

@@ -1,0 +1,40 @@
+<ng-container *ngIf="loading; else formContent">
+  <div class="flex justify-center items-center h-48 text-lg font-medium text-gray-600">
+    <mat-spinner></mat-spinner>
+    <span class="ml-4">Loading...</span>
+  </div>
+</ng-container>
+
+<ng-template #formContent>
+  <h2 class="text-2xl font-bold mb-6">{{ asset.id ? 'Edit' : 'New' }} Asset</h2>
+
+  <form (ngSubmit)="saveAsset()" #assetForm="ngForm" class="grid gap-6 max-w-lg">
+
+    <!-- Name -->
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput id="name" name="name" [(ngModel)]="asset.name" required />
+    </mat-form-field>
+
+    <!-- Type -->
+    <mat-form-field appearance="outline">
+      <mat-label>Asset type</mat-label>
+      <mat-select id="role" name="role" [(ngModel)]="asset.type" required>
+        <mat-option [value]="'tenniscourt'" disabled>Tennis court</mat-option>
+        <mat-option [value]="'vehicle'">Vehicle</mat-option>
+        <mat-option [value]="'barberseat'">Barber seat</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Actions -->
+    <div class="flex justify-end gap-4 mt-6">
+      <button mat-flat-button color="primary" type="submit" [disabled]="assetForm.invalid">
+        Save
+      </button>
+      <button mat-stroked-button color="warn" type="button" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+
+  </form>
+</ng-template>

@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<ICourtRepository, InMemoryCourtRepository>();
 builder.Services.AddSingleton<ICalendarRepository, CalendarRepository>();
+builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IMockingRepository, MockingRepository>();
 builder.Services.AddControllers();
 
@@ -47,6 +48,10 @@ builder.Services.AddAuthorizationBuilder()
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("CanManageCalendar", policy =>
+        policy.RequireClaim("permission", "BookealoAdmin", "Owner"));
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("CanManageUser", policy =>
         policy.RequireClaim("permission", "BookealoAdmin", "Owner"));
 
 var app = builder.Build();
