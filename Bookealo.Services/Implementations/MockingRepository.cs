@@ -21,7 +21,11 @@ namespace Bookealo.Services.Implementations
 
         public List<Court> GetCourts(int accountId, int calendarId)
         {
-            var courts = _accounts.FirstOrDefault(a => a.Id == accountId)?.Calendars.FirstOrDefault(c => c.Id == calendarId)?.Assets.Cast<Court>().ToList();
+            var courts = _accounts.FirstOrDefault(a => a.Id == accountId)?
+                            .Calendars.FirstOrDefault(c => c.Id == calendarId)?
+                            .Assets.OfType<Court>()
+                            .ToList();
+
             if (courts == null || courts.Count < 1)
             {
                 return new List<Court>() { };

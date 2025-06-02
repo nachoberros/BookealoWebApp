@@ -1,0 +1,20 @@
+<app-tennis-calendar-search (search)="onSearch($event)"></app-tennis-calendar-search>
+<app-tennis-calendar-admin-list [courts]="results"[isLoading]="loading" [selectedDate]="selectedDate" [calendarId]="calendarId"></app-tennis-calendar-admin-list>
+
+
+
+<!-- <ng-container *ngIf="isAuthenticated; else publicList">
+  <app-tennis-calendar-admin-list
+    [courts]="results"
+    [isLoading]="loading"
+    [selectedDate]="selectedDate"
+  ></app-tennis-calendar-admin-list>
+</ng-container>
+
+<ng-template #publicList>
+  <app-tennis-calendar-public-list
+    [courts]="results"
+    [isLoading]="loading"
+    [selectedDate]="selectedDate"
+  ></app-tennis-calendar-public-list>
+</ng-template> -->

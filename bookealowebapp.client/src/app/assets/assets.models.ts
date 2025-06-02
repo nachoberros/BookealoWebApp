@@ -1,4 +1,4 @@
-import { AssetType } from "../calendars/candelars.model";
+import { AssetType } from "../calendars/calendars.model";
 
 export interface Asset {
     id: number;

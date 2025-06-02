@@ -1,4 +1,3 @@
-using Bookealo.CommonModel.Account;
 using Bookealo.CommonModel.TennisBooking;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -6,15 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookealoWebApp.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "CanManageCalendar")]
     [ApiController]
     [Route("api/[controller]")]
-    public class TennisBookingController : ControllerBase
+    public class TennisCalendarController : BookealoBaseController
     {
         private readonly ICourtRepository _courtRepository;
-        private readonly ILogger<TennisBookingController> _logger;
+        private readonly ILogger<TennisCalendarController> _logger;
 
-        public TennisBookingController(ICourtRepository courtRepository, ILogger<TennisBookingController> logger)
+        public TennisCalendarController(ICourtRepository courtRepository, ILogger<TennisCalendarController> logger)
         {
             _courtRepository = courtRepository;
             _logger = logger;
@@ -23,28 +22,31 @@ namespace BookealoWebApp.Server.Controllers
         [HttpGet]
         public IActionResult GetAll([FromQuery]int calendarId, DateTime? date)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            var results = _courtRepository.Search(accountId, calendarId, date);
+            var results = _courtRepository.Search(AccountId.Value, calendarId, date);
             return Ok(results);
         }
 
         [HttpPost]
         public IActionResult Save([FromBody] BookingRequest booking)
         {
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
+            booking.AccountId = AccountId.Value;
+
             _courtRepository.Save(booking);
             return Ok();
         }
 
         [HttpDelete]
-        public IActionResult Cancel([FromQuery] int courtId, [FromQuery] DateTime date, [FromQuery] int userId)
+        public IActionResult Cancel([FromQuery]int calendarId, int courtId, [FromQuery] DateTime date, [FromQuery] int userId)
         {
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
+
             var booking = new BookingRequest
             {
+                CalendarId = calendarId,
+                AccountId = AccountId.Value,
                 AssetId = courtId,
                 Date = date,
                 UserId = userId
@@ -54,18 +56,22 @@ namespace BookealoWebApp.Server.Controllers
             return Ok();
         }
 
-        [Authorize(Policy = "CanManageAsset")]
         [HttpPut("block")]
         public IActionResult Block([FromBody] BookingRequest booking)
         {
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
+            booking.AccountId = AccountId.Value;
+
             _courtRepository.Block(booking);
             return Ok();
         }
 
-        [Authorize(Policy = "CanManageAsset")]
         [HttpPut("unblock")]
         public IActionResult Unblock([FromBody] BookingRequest booking)
         {
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
+            booking.AccountId = AccountId.Value;
+
             _courtRepository.Unblock(booking);
             return Ok();
         }

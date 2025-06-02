@@ -5,3 +5,15 @@
 .edit-calendar-form .mat-mdc-form-field{
     margin:1%;
 }
+
+.form-divider {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  background-color: #f9f9f9;
+}
+
+.full-width {
+  width: 100%;
+}

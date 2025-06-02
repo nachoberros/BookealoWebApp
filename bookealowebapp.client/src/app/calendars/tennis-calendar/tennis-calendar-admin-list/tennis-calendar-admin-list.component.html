@@ -1,0 +1,84 @@
+@if(courts.length > 0)
+{
+<div *ngIf="isLoading" class="loading-container">
+  <div class="gradient-spinner"></div>
+</div>
+<div *ngIf="!isLoading">
+  <table class="booking-grid">
+    <thead>
+      <tr>
+        <th cclass="narrow-column">Time</th>
+        <th *ngFor="let court of courts">{{ court.name }} - {{ court.description }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let slot of timeSlots">
+        <td class="narrow-column">{{ slot }}</td>
+        <td *ngFor="let court of courts" [ngSwitch]="getSlotStatus(getSlotDetails(court, slot))">
+          <div *ngSwitchCase="'booked'" class="booked-court-cell" (click)="onBookedSlotClick(court, slot)">
+            {{ getSlotDetails(court, slot)?.description }}
+          </div>
+          <div *ngSwitchCase="'available'" class="available-court-cell" (click)="onAvailableSlotClick(court, slot)">
+          </div>
+          <div *ngSwitchCase="'blocked'" class="blocked-court-cell" (click)="onBlockedSlotClick(court, slot)">
+          </div>
+          <div *ngSwitchDefault>
+            Unknown
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+}@else{
+<p class="booking-grid">No bookings found. Try searching above.</p>
+}
+
+
+<!-- Backdrop -->
+<div class="modal-backdrop" *ngIf="showAvailableModal" (click)="showAvailableModal = false"></div>
+
+<!-- Success Alert -->
+<div class="success-alert" *ngIf="showSuccessAlert">
+  ✅ Slot updated successfully!
+</div>
+
+<!-- Available Slot Modal -->
+<div class="modal" *ngIf="showAvailableModal">
+  <h3>🎾 Booking Court</h3>
+  <p><strong>Court:</strong> {{ selectedCourt?.name }}</p>
+  <p><strong>Time:</strong> {{ selectedTime }}</p>
+  <div class="modal-buttons">
+    <button class="btn cancel" (click)="showAvailableModal = false">Cancel</button>
+    <button class="btn confirm" (click)="confirmBooking(selectedCourt, selectedTime)">Confirm</button>
+    <button class="btn block" (click)="blockSlot(selectedCourt, selectedTime)">Block</button>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop" *ngIf="showUnblockedModal" (click)="showUnblockedModal = false"></div>
+
+<!-- Blocked Slot Modal -->
+<div class="modal" *ngIf="showUnblockedModal">
+  <h3>🛑 Slot Blocked</h3>
+  <p><strong>Court:</strong> {{ selectedCourt?.name }}</p>
+  <p><strong>Time:</strong> {{ selectedTime }}</p>
+  <div class="modal-buttons">
+    <button class="btn cancel" (click)="showUnblockedModal = false">Cancel</button>
+    <button class="btn unblock" (click)="unblockSlot(selectedCourt, selectedTime)">Unblock</button>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop" *ngIf="showBookedModal" (click)="showBookedModal = false"></div>
+
+<!-- Booked Slot Modal -->
+<div class="modal" *ngIf="showBookedModal">
+  <h3>📌 Existing Booking</h3>
+  <p><strong>Court:</strong> {{ selectedCourt?.name }}</p>
+  <p><strong>Time:</strong> {{ selectedTime }}</p>
+  <div class="modal-buttons">
+    <button class="btn cancel" (click)="showBookedModal = false">Close</button>
+    <button class="btn danger" (click)="cancelSlot(selectedCourt, selectedTime)">Cancel Booking</button>
+  </div>
+</div>

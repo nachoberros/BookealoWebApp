@@ -1,0 +1,251 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+}
+
+th {
+  background-color: #f0f0f0;
+  text-align: left;
+}
+
+.booking-grid {
+  border-collapse: collapse;
+  width: 90%;
+  text-align: center;
+  margin: 2%;
+}
+
+.booking-grid th,
+.booking-grid td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+
+.booking-grid td {
+  min-width: 100px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: #f8f8f8;
+  z-index: 1;
+}
+
+.booked-court-cell {
+  background: linear-gradient(135deg, #4e54c8, #8f94fb);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  padding-top: 1%;
+  padding-bottom: 1%;
+}
+
+.available-court-cell {
+  /* darker green text */
+  transition: background-color 0.3s ease;
+  width: 100%;
+  height: 20px;
+  display: block;
+}
+
+td:has(.available-court-cell) {
+  background-color: #eafbea;
+  /* Example styling */
+  border: 2px solid green;
+}
+
+.available-court-cell:hover {
+  background-color: #d0f0d8;
+  /* even lighter green on hover */
+}
+
+.blocked-court-cell {
+  background-color: #d5d2d1;
+  /* light gray */
+  color: #323532;
+  /* darker gray text */
+  transition: background-color 0.3s ease;
+  width: 100%;
+  height: 20px;
+  display: block;
+}
+
+.blocked-court-cell:hover {
+  background-color: #d5d2d1;
+  /* even lighter gray */
+}
+
+td:has(.blocked-court-cell) {
+  background-color: #d5d2d1;
+  /* Example styling */
+  border: 2px solid rgb(130, 133, 130);
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+}
+
+.gradient-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid transparent;
+  border-top: 4px solid #4e54c8;
+  border-right: 4px solid #8f94fb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.narrow-column {
+  width: 80px;
+  white-space: nowrap;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+  min-width: 280px;
+  text-align: center;
+}
+
+.modal h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.modal-buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.btn {
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn.cancel {
+  background-color: #ddd;
+  color: #333;
+}
+
+.btn.cancel:hover {
+  background-color: #bbb;
+}
+
+.btn.confirm {
+  background: linear-gradient(to right, #43e97b, #38f9d7);
+  /* Green gradient */
+  color: white;
+}
+
+.btn.confirm:hover {
+  opacity: 0.85;
+}
+
+.btn.block {
+  background: linear-gradient(to right, #ff416c, #ff4b2b); /* Vibrant red/pink */
+  color: white;
+}
+
+.btn.danger {
+  background: linear-gradient(to right, #f85032, #e73827); /* Red gradient */
+  color: white;
+}
+
+.btn.unblock {
+  background: linear-gradient(to right, #36d1dc, #5b86e5); /* Cool teal-blue */
+  color: white;
+}
+
+.btn.block:hover {
+  opacity: 0.85;
+}
+
+/* Success alert already defined earlier */
+.success-alert {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background-color: #4caf50;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  animation: fadeInOut 3s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}

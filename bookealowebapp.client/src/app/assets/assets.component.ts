@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
 import { Asset } from './assets.models';
-import { AssetType } from '../calendars/candelars.model';
+import { AssetType } from '../calendars/calendars.model';
 
 @Component({
     selector: 'app-assets',

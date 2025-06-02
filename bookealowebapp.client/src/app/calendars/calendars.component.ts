@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Calendar, CalendarType } from './candelars.model';
+import { Calendar, CalendarType } from './calendars.model';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-calendars',
     standalone: true,
-    imports: [CommonModule, RouterModule],
+    imports: [CommonModule, RouterModule, MatMenuModule, MatIconModule, MatButtonModule],
     templateUrl: './calendars.component.html',
     styleUrls: ['./calendars.component.css']
 })
@@ -18,7 +22,8 @@ export class CalendarsComponent implements OnInit {
 
     constructor(
         private http: HttpClient,
-        private router: Router
+        private router: Router,
+        private clipboard: Clipboard
     ) { }
 
     ngOnInit(): void {
@@ -57,5 +62,32 @@ export class CalendarsComponent implements OnInit {
                 this.loading = false;
             }
         });
+    }
+
+    copyPublicLink(calendar: Calendar) {
+        const path = this.getUrlPathByCalendarType(calendar.type);
+        const publicUrl = `https://localhost:4200/public/${path}/${calendar.id}`;
+        this.clipboard.copy(publicUrl);
+        alert('Public link copied!');
+    }
+
+    copyAdminLink(calendar: Calendar) {
+        const path = this.getUrlPathByCalendarType(calendar.type);
+        const privateUrl = `https://localhost:4200/admin/${path}/${calendar.id}?token=XYZ`;
+        this.clipboard.copy(privateUrl);
+        alert('Private link copied!');
+    }
+
+    private getUrlPathByCalendarType(type: CalendarType): string {
+        switch (type) {
+            case CalendarType.Tennis:
+                return 'tenniscalendar';
+            case CalendarType.Barber:
+                return 'barbercalendar';
+            case CalendarType.CarRental:
+                return 'carrentalcalendar';
+            default:
+                return 'calendar';
+        }
     }
 }

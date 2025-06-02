@@ -27,6 +27,21 @@
         <td class="calendar-actions">
           <button (click)="editCalendar(calendar)" class="edit-btn">Edit</button>
           <button (click)="deleteCalendar(calendar)" class="delete-btn">Delete</button>
+
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More actions">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="copyPublicLink(calendar)">
+              <mat-icon>link</mat-icon>
+              <span>Copy Public Link</span>
+            </button>
+            <button mat-menu-item (click)="copyAdminLink(calendar)">
+              <mat-icon>lock</mat-icon>
+              <span>Copy Admin Link</span>
+            </button>
+          </mat-menu>
         </td>
       </tr>
     </tbody>

@@ -10,7 +10,7 @@ namespace BookealoWebApp.Server.Controllers
     [Authorize(Policy = "CanManageUser")]
     [ApiController]
     [Route("api/[controller]")]
-    public class UserController : ControllerBase
+    public class UserController : BookealoBaseController
     {
         private readonly IUserRepository _userRepository;
         private readonly ILogger<UserController> _logger;
@@ -30,26 +30,18 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Email claim not found.");
             }
 
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            var results = _userRepository.GetUsers(accountId);
+            var results = _userRepository.GetUsers(AccountId.Value);
             return Ok(results);
         }
 
         [HttpGet("{userId}")]
         public IActionResult GetById(int userId)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            var result = _userRepository.GetUserById(accountId, userId);
+            var result = _userRepository.GetUserById(AccountId.Value, userId);
             if (result == null)
             {
                 return NotFound($"User with ID {userId} not found.");
@@ -61,45 +53,33 @@ namespace BookealoWebApp.Server.Controllers
         [HttpPost]
         public IActionResult Save([FromBody] User user)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            _userRepository.AddUser(accountId, user);
+            _userRepository.AddUser(AccountId.Value, user);
             return Ok();
         }
 
         [HttpPut]
         public IActionResult Update([FromBody] User user)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            _userRepository.UpdateUser(accountId, user);
+            _userRepository.UpdateUser(AccountId.Value, user);
             return Ok();
         }
 
         [HttpDelete]
         public IActionResult Delete([FromQuery] int id)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            var user = _userRepository.GetUserById(accountId, id);
+            var user = _userRepository.GetUserById(AccountId.Value, id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            _userRepository.RemoveUser(accountId, user);
+            _userRepository.RemoveUser(AccountId.Value, user);
 
             return Ok();
         }

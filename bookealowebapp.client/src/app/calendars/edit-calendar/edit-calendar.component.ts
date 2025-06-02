@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Calendar, CalendarType } from '../candelars.model';
+import { Asset, Calendar, CalendarType } from '../calendars.model';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +10,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { User } from '../../users/users.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-edit-calendar',
@@ -37,6 +39,11 @@ export class EditCalendarComponent implements OnInit {
         sundayStartTime: undefined,
         sundayEndTime: undefined
     };
+
+    selectedUserIds: number[] = [];
+    selectedAssetIds: number[] = [];
+    accountUsers: User[] = [];
+    accountAssets: Asset[] = [];
     loading: boolean = false;
 
     private route = inject(ActivatedRoute);
@@ -49,14 +56,23 @@ export class EditCalendarComponent implements OnInit {
         if (idParam) {
             this.calendarId = idParam;
             this.loading = true;
-            this.http.get<Calendar>(`/api/calendar/${this.calendarId}`).subscribe({
-                next: data => {
-                    this.formatBackendDates(data);
-                    this.calendar = data;
+
+            forkJoin({
+                calendar: this.http.get<Calendar>(`/api/calendar/${this.calendarId}`),
+                users: this.http.get<User[]>(`/api/user`),
+                assets: this.http.get<Asset[]>(`/api/asset`)
+            }).subscribe({
+                next: ({ calendar, users, assets }) => {
+                    this.formatBackendDates(calendar);
+                    this.calendar = calendar;
+                    this.accountUsers = users;
+                    this.accountAssets = assets;
+                    this.selectedUserIds = calendar.users?.map(u => u.id) || [];
+                    this.selectedAssetIds = calendar.assets?.map(a => a.id) || [];
                     this.loading = false;
                 },
                 error: err => {
-                    console.error('Failed to load calendar', err);
+                    console.error('Failed to load data:', err);
                     this.loading = false;
                 }
             });
@@ -70,6 +86,8 @@ export class EditCalendarComponent implements OnInit {
         }
         const payload = {
             ...this.calendar,
+            users: this.selectedUserIds.map(id => this.accountUsers.find(u => u.id === id)!),
+            assets: this.selectedAssetIds.map(id => this.accountAssets.find(a => a.id === id)!),
             sundayStartTime: this.formatTimeString(this.calendar.sundayStartTime),
             sundayEndTime: this.formatTimeString(this.calendar.sundayEndTime),
             saturdayStartTime: this.formatTimeString(this.calendar.saturdayStartTime),

@@ -10,7 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Asset } from '../assets.models';
-import { AssetType } from '../../calendars/candelars.model';
+import { AssetType } from '../../calendars/calendars.model';
 
 @Component({
     selector: 'app-edit-asset',

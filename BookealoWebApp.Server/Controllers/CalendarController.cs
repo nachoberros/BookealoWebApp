@@ -8,7 +8,7 @@ namespace BookealoWebApp.Server.Controllers
     [Authorize(Policy = "CanManageCalendar")]
     [ApiController]
     [Route("api/[controller]")]
-    public class CalendarController : ControllerBase
+    public class CalendarController : BookealoBaseController
     {
         private readonly ICalendarRepository _calendarRepository;
         private readonly ILogger<CalendarController> _logger;
@@ -22,26 +22,18 @@ namespace BookealoWebApp.Server.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            var results = _calendarRepository.GetCalendars(accountId);
+            var results = _calendarRepository.GetCalendars(AccountId.Value);
             return Ok(results);
         }
 
         [HttpGet("{calendarId}")]
         public IActionResult GetById(int calendarId)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            var result = _calendarRepository.GetCalendarById(accountId, calendarId);
+            var result = _calendarRepository.GetCalendarById(AccountId.Value, calendarId);
             if (result == null)
             {
                 return NotFound($"Calendar with ID {calendarId} not found.");
@@ -54,45 +46,33 @@ namespace BookealoWebApp.Server.Controllers
         [HttpPost]
         public IActionResult Save([FromBody] Calendar calendar)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            _calendarRepository.AddCalendar(accountId, calendar);
+            _calendarRepository.AddCalendar(AccountId.Value, calendar);
             return Ok();
         }
 
         [HttpPut]
         public IActionResult Update([FromBody] Calendar calendar)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            _calendarRepository.UpdateCalendar(accountId, calendar);
+            _calendarRepository.UpdateCalendar(AccountId.Value, calendar);
             return Ok();
         }
 
         [HttpDelete]
         public IActionResult Delete([FromQuery] int id)
         {
-            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
-            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
-            {
-                return Unauthorized("Account Id claim not found.");
-            }
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
-            var calendar = _calendarRepository.GetCalendarById(accountId, id);
+            var calendar = _calendarRepository.GetCalendarById(AccountId.Value, id);
             if(calendar == null)
             {
                 return NotFound();
             }
 
-            _calendarRepository.RemoveCalendar(accountId, calendar);
+            _calendarRepository.RemoveCalendar(AccountId.Value, calendar);
 
             return Ok();
         }

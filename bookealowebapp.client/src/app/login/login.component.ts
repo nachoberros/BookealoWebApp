@@ -36,7 +36,7 @@ export class LoginComponent {
                 next: (response: any) => {
                     this.authService.login(response.token, response.user);
                     this.userService.setCurrentUser(response.user);
-                    this.router.navigate(['/']); // redirect to home or dashboard
+                    this.router.navigate(['/home']);
                 },
                 error: (err) => {
                     console.error('Login failed', err);

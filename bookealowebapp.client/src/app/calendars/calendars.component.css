@@ -97,3 +97,13 @@
 .default {
   color: #999;
 }
+
+.calendar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions-column {
+  width: 180px;
+}
