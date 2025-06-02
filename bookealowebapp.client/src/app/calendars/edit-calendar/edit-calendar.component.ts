@@ -39,7 +39,6 @@ export class EditCalendarComponent implements OnInit {
     };
     loading: boolean = false;
 
-    // ✅ Injected services using Angular v14+ `inject()` API (alternative to constructor DI)
     private route = inject(ActivatedRoute);
     private http = inject(HttpClient);
     private router = inject(Router);
@@ -52,6 +51,7 @@ export class EditCalendarComponent implements OnInit {
             this.loading = true;
             this.http.get<Calendar>(`/api/calendar/${this.calendarId}`).subscribe({
                 next: data => {
+                    this.formatBackendDates(data);
                     this.calendar = data;
                     this.loading = false;
                 },
@@ -64,9 +64,22 @@ export class EditCalendarComponent implements OnInit {
     }
 
     saveCalendar() {
+        if (this.calendar.type !== CalendarType.Tennis) {
+            alert('Only Tennis calendars can be saved from this form.');
+            return;
+        }
+        const payload = {
+            ...this.calendar,
+            sundayStartTime: this.formatTimeString(this.calendar.sundayStartTime),
+            sundayEndTime: this.formatTimeString(this.calendar.sundayEndTime),
+            saturdayStartTime: this.formatTimeString(this.calendar.saturdayStartTime),
+            saturdayEndTime: this.formatTimeString(this.calendar.saturdayEndTime),
+            startTime: this.formatTimeString(this.calendar.startTime),
+            endTime: this.formatTimeString(this.calendar.endTime)
+        };
         const request = this.calendarId
-            ? this.http.put(`/api/calendar/${this.calendarId}`, this.calendar)
-            : this.http.post(`/api/calendar`, this.calendar);
+            ? this.http.put(`/api/calendar`, payload)
+            : this.http.post(`/api/calendar`, payload);
 
         request.subscribe({
             next: () => {
@@ -81,5 +94,39 @@ export class EditCalendarComponent implements OnInit {
 
     cancel() {
         this.router.navigate(['/calendars']);
+    }
+
+    private formatTimeString(time: string | undefined): string | undefined {
+        if (!time) return undefined;
+
+        // Already in HH:mm:ss format
+        if (/^\d{2}:\d{2}:\d{2}$/.test(time)) {
+            return time;
+        }
+
+        // In HH:mm format — convert to HH:mm:ss
+        if (/^\d{2}:\d{2}$/.test(time)) {
+            return `${time}:00`;
+        }
+
+        console.warn(`Invalid time format: ${time}`);
+        return undefined;
+    }
+
+    private formatDateToLocalInput(dateString: string): string {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    private formatBackendDates(data: Calendar) {
+        if (data.endDate) {
+            data.endDate = this.formatDateToLocalInput(data.endDate);
+        }
+        if (data.startDate) {
+            data.startDate = this.formatDateToLocalInput(data.startDate);
+        }
     }
 }

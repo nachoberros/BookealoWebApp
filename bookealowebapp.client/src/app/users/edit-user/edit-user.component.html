@@ -1,3 +1,4 @@
+<div class="edit-user-form">
 <ng-container *ngIf="loading; else formContent">
   <div class="flex justify-center items-center h-48 text-lg font-medium text-gray-600">
     <mat-spinner></mat-spinner>
@@ -19,16 +20,25 @@
     <!-- Email -->
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
-      <input matInput id="email" name="email" [(ngModel)]="user.email" required />
+      <input matInput id="email" name="email" [(ngModel)]="user.email" required email #emailModel="ngModel" />
+      <mat-error *ngIf="emailModel.errors?.['required']">
+        Email is required.
+      </mat-error>
+      <mat-error *ngIf="emailModel.errors?.['email']">
+        Enter a valid email address.
+      </mat-error>
     </mat-form-field>
 
     <!-- Type -->
     <mat-form-field appearance="outline">
       <mat-label>Role</mat-label>
-      <mat-select id="role" name="role" [(ngModel)]="user.permission" required>
-        <mat-option [value]="'owner'" disabled>Owner</mat-option>
-        <mat-option [value]="'admin'">Admin</mat-option>
-        <mat-option [value]="'guest'">Guest</mat-option>
+      <mat-select id="role" name="role" [(ngModel)]="user.role" required
+        [disabled]="user.role === 0 || user.role === 1">
+        <mat-option [value]="1" [disabled]="user.role !== 0 && user.role !== 1">
+          Owner
+        </mat-option>
+        <mat-option [value]="2">Admin</mat-option>
+        <mat-option [value]="3">Guest</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -44,3 +54,4 @@
 
   </form>
 </ng-template>
+</div>

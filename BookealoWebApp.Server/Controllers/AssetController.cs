@@ -1,4 +1,5 @@
-﻿using Bookealo.CommonModel.Users;
+﻿using Bookealo.CommonModel.Assets;
+using Bookealo.CommonModel.Users;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,12 +31,12 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            var results = _userRepository.GetUsers(accountId);
+            var results = _assetRepository.GetAssets(accountId);
             return Ok(results);
         }
 
-        [HttpPost]
-        public IActionResult Save([FromBody] User user)
+        [HttpGet("{assetId}")]
+        public IActionResult GetById(int assetId)
         {
             var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
             if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
@@ -43,12 +44,30 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            _userRepository.AddUser(accountId, user);
+            var result = _assetRepository.GetAssetById(accountId, assetId);
+            if (result == null)
+            {
+                return NotFound($"Asset with ID {assetId} not found.");
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public IActionResult Save([FromBody] Asset asset)
+        {
+            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
+            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
+            {
+                return Unauthorized("Account Id claim not found.");
+            }
+
+            _assetRepository.AddAsset(accountId, asset);
             return Ok();
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] User user)
+        public IActionResult Update([FromBody] Asset asset)
         {
             var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
             if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
@@ -56,7 +75,7 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            _userRepository.UpdateUser(accountId, user);
+            _assetRepository.UpdateAsset(accountId, asset);
             return Ok();
         }
 
@@ -69,13 +88,13 @@ namespace BookealoWebApp.Server.Controllers
                 return Unauthorized("Account Id claim not found.");
             }
 
-            var user = _userRepository.GetUserById(accountId, id);
-            if (user == null)
+            var asset = _assetRepository.GetAssetById(accountId, id);
+            if (asset == null)
             {
                 return NotFound();
             }
 
-            _userRepository.RemoveUser(accountId, user);
+            _assetRepository.RemoveAsset(accountId, asset);
 
             return Ok();
         }

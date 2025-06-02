@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Court, SlotDetail } from '../tennis-booking-model';
 import { UserService } from '../../services/user.service';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../../services/auth.service';
+import { User } from '../../users/users.model';
 
 @Component({
   selector: 'app-tennis-booking-list',

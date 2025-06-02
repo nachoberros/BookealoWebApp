@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<ICourtRepository, InMemoryCourtRepository>();
 builder.Services.AddSingleton<ICalendarRepository, CalendarRepository>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IAssetRepository, AssetRepository>();
 builder.Services.AddSingleton<IMockingRepository, MockingRepository>();
 builder.Services.AddControllers();
 

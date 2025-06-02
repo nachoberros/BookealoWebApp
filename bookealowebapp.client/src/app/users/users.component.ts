@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
-import { User } from '../services/auth.service';
+import { Role, User } from './users.model';
 
 @Component({
     selector: 'app-users',
@@ -12,6 +12,7 @@ import { User } from '../services/auth.service';
     styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+    public Role = Role;
     users: User[] = [];
     loading: boolean = false;
 

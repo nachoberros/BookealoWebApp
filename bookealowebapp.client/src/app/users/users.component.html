@@ -17,8 +17,16 @@
       <tr *ngFor="let user of users">
         <td>{{ user.name }}</td>
         <td>{{ user.email }}</td>
-        <td>{{ user.permission }}</td>
-        <td class="users-actions">
+        <td class="user-role">
+          <span [ngSwitch]="Role[user.role]">
+            <i *ngSwitchCase="'Owner'" class="fa-solid fa-user-tie type-icon owner"></i>
+            <i *ngSwitchCase="'Admin'" class="fa-solid fa-shield-halved type-icon admin"></i>
+            <i *ngSwitchCase="'Guest'" class="fa-solid fa-user type-icon guest"></i>
+            <i *ngSwitchDefault class="fa-solid fa-user-gear type-icon default"></i>
+          </span>
+          {{ Role[user.role] }}
+        </td>
+        <td class="user-actions" *ngIf="user.role !== 0 && user.role !== 1">
           <button (click)="editUser(user)" class="edit-btn">Edit</button>
           <button (click)="deleteUser(user)" class="delete-btn">Delete</button>
         </td>

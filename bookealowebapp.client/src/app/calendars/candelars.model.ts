@@ -1,4 +1,4 @@
-import { User } from "../services/auth.service";
+import { User } from "../users/users.model";
 
 export interface Calendar {
   id: number;
@@ -6,8 +6,8 @@ export interface Calendar {
   type: CalendarType;
   users: User[];
   assets: Asset[];
-  startDate?: Date;
-  endDate?: Date;
+  startDate?: string;
+  endDate?: string;
   startTime?: string;
   endTime?: string;
   isOnSaturday: boolean;

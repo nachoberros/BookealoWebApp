@@ -1,5 +1,8 @@
+import { AssetType } from "../calendars/candelars.model";
+
 export interface Asset {
     id: number;
     name: string;
-    type: string;
+    description: string;
+    type: AssetType;
 }

@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { User } from '../../services/auth.service';
+import { Role, User } from '../users.model';
 
 @Component({
     selector: 'app-edit-user',
@@ -23,7 +23,7 @@ export class EditUserComponent implements OnInit {
     user: User = {
         id: 0, name: '',
         email: '',
-        permission: ''
+        role: Role.Guest
     };
     loading: boolean = false;
 
@@ -52,7 +52,7 @@ export class EditUserComponent implements OnInit {
 
     saveUser() {
         const request = this.userId
-            ? this.http.put(`/api/user/${this.userId}`, this.user)
+            ? this.http.put(`/api/user`, this.user)
             : this.http.post(`/api/user`, this.user);
 
         request.subscribe({

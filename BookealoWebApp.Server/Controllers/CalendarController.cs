@@ -32,6 +32,25 @@ namespace BookealoWebApp.Server.Controllers
             return Ok(results);
         }
 
+        [HttpGet("{calendarId}")]
+        public IActionResult GetById(int calendarId)
+        {
+            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
+            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
+            {
+                return Unauthorized("Account Id claim not found.");
+            }
+
+            var result = _calendarRepository.GetCalendarById(accountId, calendarId);
+            if (result == null)
+            {
+                return NotFound($"Calendar with ID {calendarId} not found.");
+            }
+
+            return Ok(result);
+        }
+
+
         [HttpPost]
         public IActionResult Save([FromBody] Calendar calendar)
         {

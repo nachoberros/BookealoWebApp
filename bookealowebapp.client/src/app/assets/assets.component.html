@@ -1,0 +1,37 @@
+<div class="asset-list">
+    <div class="asset-header">
+        <h2>assets</h2>
+        <button [routerLink]="['/assets/new']" class="new-asset-btn">+ New asset</button>
+    </div>
+
+    <table class="asset-table w-full border-collapse">
+        <thead>
+            <tr>
+                <th class="text-left px-4 py-3">Name</th>
+                <th class="text-left px-4 py-3">Description</th>
+                <th class="text-left px-4 py-3">Type</th>
+                <th class="text-left px-4 py-3 actions-column">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let asset of assets">
+                <td class="px-4 py-3">{{ asset.name }}</td>
+                <td class="px-4 py-3">{{ asset.description }}</td>
+                <td class="asset-type px-4 py-3">
+                    <span [ngSwitch]="AssetType[asset.type]">
+                        <i *ngSwitchCase="'tenniscourt'"
+                            class="fa-solid fa-table-tennis-paddle-ball type-icon tennis"></i>
+                        <i *ngSwitchCase="'barberseat'" class="fa-solid fa-cut type-icon barber"></i>
+                        <i *ngSwitchCase="'vehicle'" class="fa-solid fa-car-side type-icon car"></i>
+                        <i *ngSwitchDefault class="fa-solid fa-calendar-check type-icon default"></i>
+                    </span>
+                    {{ AssetType[asset.type] }}
+                </td>
+                <td class="asset-actions px-4 py-3">
+                    <button (click)="editAsset(asset)" class="edit-btn">Edit</button>
+                    <button (click)="deleteAsset(asset)" class="delete-btn">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

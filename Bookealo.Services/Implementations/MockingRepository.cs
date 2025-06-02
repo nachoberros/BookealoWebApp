@@ -6,6 +6,7 @@ using Bookealo.CommonModel.Account;
 using Bookealo.CommonModel.Calendars.Enum;
 using Bookealo.CommonModel.Assets;
 using Bookealo.CommonModel;
+using Bookealo.CommonModel.Users.Enum;
 
 namespace Bookealo.Services.Implementations
 {
@@ -45,7 +46,7 @@ namespace Bookealo.Services.Implementations
 
             var newBooking = new AssetBooking
             {
-                ID = GenerateBookingId(),
+                Id = GenerateBookingId(),
                 Date = bookingRequest.Date,
                 User = GetUser(bookingRequest.UserId)
             };
@@ -92,7 +93,7 @@ namespace Bookealo.Services.Implementations
 
             var newBlocking = new AssetBooking
             {
-                ID = GenerateBlockingId(),
+                Id = GenerateBlockingId(),
                 Date = bookingRequest.Date,
                 User = GetUser(bookingRequest.UserId)
             };
@@ -189,7 +190,7 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException($"Calendar with ID {calendar.Id} was not found.");
             }
 
-            account.Calendars.Remove(calendar);
+            account.Calendars.Remove(mockedCalendar);
             account.Calendars.Add(calendar);
         }
 
@@ -207,7 +208,7 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException($"User with email {user.Email} was not found.");
             }
 
-            account.Users.Remove(user);
+            account.Users.Remove(mockedUser);
             account.Users.Add(user);
         }
 
@@ -230,6 +231,11 @@ namespace Bookealo.Services.Implementations
 
         public void AddUser(int accountId, User user)
         {
+            if (user == null)
+            {
+                throw new InvalidOperationException("User cannot be null");
+            }
+
             var account = _accounts.FirstOrDefault(a => a.Id.Equals(accountId));
             if (account == null)
             {
@@ -242,10 +248,7 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException($"User with email {user.Email} is already in the list.");
             }
 
-            if (mockedUser != null)
-            {
-                account.Users.Add(mockedUser);
-            }
+            account.Users.Add(user);
         }
 
         public List<Asset> GetAssets(int accountId)
@@ -273,7 +276,10 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException($"Asset with name {asset.Name} was not found.");
             }
 
-            account.Assets.Remove(asset);
+            asset.Blockings = mockedAsset.Blockings;
+            asset.Bookings = mockedAsset.Bookings;
+
+            account.Assets.Remove(mockedAsset);
             account.Assets.Add(asset);
         }
 
@@ -303,15 +309,12 @@ namespace Bookealo.Services.Implementations
             }
 
             var mockedAsset = account.Assets.FirstOrDefault(c => c.Id == asset.Id);
-            if (mockedAsset == null)
-            {
-                throw new InvalidOperationException($"Asset with name {asset.Name} was not found.");
-            }
-
             if (mockedAsset != null)
             {
-                account.Assets.Add(mockedAsset);
+                throw new InvalidOperationException($"Asset with name {asset.Name} is already found.");
             }
+
+            account.Assets.Add(asset);
         }
 
         public bool IsValidAccount(int accountId, string email)
@@ -348,7 +351,7 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException("charlie needs to exist");
             }
 
-            return new Account() {Id = 1, Name = "Charlies Tennis Club", Owner = charlie, Assets = courts.Cast<Asset>().ToList(), Calendars = calendars, Users = users };
+            return new Account() { Id = 1, Name = "Charlies Tennis Club", Owner = charlie, Assets = courts.Cast<Asset>().ToList(), Calendars = calendars, Users = users };
         }
 
         private User GetUser(int? userId)
@@ -382,17 +385,17 @@ namespace Bookealo.Services.Implementations
                     Description = "Clay",
                     Bookings =
                     [
-                        new AssetBooking { ID = 1, Date = DateTime.Today.AddHours(18), User = alice },
-                        new AssetBooking { ID = 2, Date = DateTime.Today.AddHours(19), User = bob },
-                        new AssetBooking { ID = 3, Date = DateTime.Today.AddDays(1).AddHours(18), User = mike },
-                        new AssetBooking { ID = 4, Date = DateTime.Today.AddDays(1).AddHours(19),  User = alice}
+                        new AssetBooking { Id = 1, Date = DateTime.Today.AddHours(18), User = alice },
+                        new AssetBooking { Id = 2, Date = DateTime.Today.AddHours(19), User = bob },
+                        new AssetBooking { Id = 3, Date = DateTime.Today.AddDays(1).AddHours(18), User = mike },
+                        new AssetBooking { Id = 4, Date = DateTime.Today.AddDays(1).AddHours(19),  User = alice}
                     ],
                     Blockings =
                     [
-                        new AssetBooking { ID = 1, Date = DateTime.Today.AddHours(14), User = alice },
-                        new AssetBooking { ID = 2, Date = DateTime.Today.AddHours(15), User = bob },
-                        new AssetBooking { ID = 3, Date = DateTime.Today.AddDays(1).AddHours(14), User = mike },
-                        new AssetBooking { ID = 4, Date = DateTime.Today.AddDays(1).AddHours(15),  User = alice}
+                        new AssetBooking { Id = 1, Date = DateTime.Today.AddHours(14), User = alice },
+                        new AssetBooking { Id = 2, Date = DateTime.Today.AddHours(15), User = bob },
+                        new AssetBooking { Id = 3, Date = DateTime.Today.AddDays(1).AddHours(14), User = mike },
+                        new AssetBooking { Id = 4, Date = DateTime.Today.AddDays(1).AddHours(15),  User = alice}
                     ]
                 },
                 new() {
@@ -401,13 +404,13 @@ namespace Bookealo.Services.Implementations
                     Description = "Hard",
                     Bookings =
                     [
-                        new AssetBooking { ID = 5, Date = DateTime.Today.AddHours(18), User = charlie },
-                        new AssetBooking { ID = 6, Date = DateTime.Today.AddHours(19), User = bob }
+                        new AssetBooking { Id = 5, Date = DateTime.Today.AddHours(18), User = charlie },
+                        new AssetBooking { Id = 6, Date = DateTime.Today.AddHours(19), User = bob }
                     ],
                     Blockings =
                     [
-                        new AssetBooking { ID = 5, Date = DateTime.Today.AddHours(11), User = charlie },
-                        new AssetBooking { ID = 6, Date = DateTime.Today.AddHours(12), User = bob }
+                        new AssetBooking { Id = 5, Date = DateTime.Today.AddHours(11), User = charlie },
+                        new AssetBooking { Id = 6, Date = DateTime.Today.AddHours(12), User = bob }
                     ]
                 },
                 new() {
@@ -416,13 +419,13 @@ namespace Bookealo.Services.Implementations
                     Description = "Grass",
                     Bookings =
                     [
-                        new AssetBooking { ID = 7, Date = DateTime.Today.AddHours(17), User = mike },
-                        new AssetBooking { ID = 8, Date = DateTime.Today.AddHours(16), User = bob }
+                        new AssetBooking { Id = 7, Date = DateTime.Today.AddHours(17), User = mike },
+                        new AssetBooking { Id = 8, Date = DateTime.Today.AddHours(16), User = bob }
                     ],
                     Blockings =
                     [
-                        new AssetBooking { ID = 7, Date = DateTime.Today.AddHours(14), User = mike },
-                        new AssetBooking { ID = 8, Date = DateTime.Today.AddHours(15), User = bob }
+                        new AssetBooking { Id = 7, Date = DateTime.Today.AddHours(14), User = mike },
+                        new AssetBooking { Id = 8, Date = DateTime.Today.AddHours(15), User = bob }
                     ]
                 },
                 new() {
@@ -431,13 +434,13 @@ namespace Bookealo.Services.Implementations
                     Description = "Clay",
                     Bookings =
                     [
-                        new AssetBooking { ID = 9, Date = DateTime.Today.AddHours(17), User = alice },
-                        new AssetBooking { ID = 10, Date = DateTime.Today.AddHours(14), User = charlie }
+                        new AssetBooking { Id = 9, Date = DateTime.Today.AddHours(17), User = alice },
+                        new AssetBooking { Id = 10, Date = DateTime.Today.AddHours(14), User = charlie }
                     ],
                     Blockings =
                     [
-                        new AssetBooking { ID = 9, Date = DateTime.Today.AddHours(11), User = alice },
-                        new AssetBooking { ID = 10, Date = DateTime.Today.AddHours(12), User = charlie }
+                        new AssetBooking { Id = 9, Date = DateTime.Today.AddHours(11), User = alice },
+                        new AssetBooking { Id = 10, Date = DateTime.Today.AddHours(12), User = charlie }
                     ]
                 }
             };
@@ -452,28 +455,28 @@ namespace Bookealo.Services.Implementations
                 Id = 1,
                 Name = "Alice",
                 Email = "alice@gmail.com",
-                Permission = Permission.Admin
+                Role = Role.Admin
             },
             new()
             {
                 Id = 2,
                 Name = "Bob",
                 Email = "bob@gmail.com",
-                Permission = Permission.Admin
+                Role = Role.Admin
             },
             new()
             {
                 Id = 3,
                 Name = "Mike",
                 Email = "mike@gmail.com",
-                Permission = Permission.Owner
+                Role = Role.Owner
             },
             new()
             {
                 Id = 4,
                 Name = "Charlie",
                 Email = "andresberros@gmail.com",
-                Permission = Permission.BookealoAdmin
+                Role = Role.BookealoAdmin
             }];
         }
 
@@ -504,12 +507,22 @@ namespace Bookealo.Services.Implementations
 
         private int GenerateBookingId()
         {
-            return _accounts.SelectMany(a => a.Assets).SelectMany(c => c.Bookings).Max(b => b.ID) + 1;
+            return _accounts.SelectMany(a => a.Assets).SelectMany(c => c.Bookings).Max(b => b.Id) + 1;
         }
 
         private int GenerateBlockingId()
         {
-            return _accounts.SelectMany(a => a.Assets).SelectMany(c => c.Blockings).Max(b => b.ID) + 1;
+            return _accounts.SelectMany(a => a.Assets).SelectMany(c => c.Blockings).Max(b => b.Id) + 1;
+        }
+
+        private int GenerateUserId()
+        {
+            return _accounts.SelectMany(a => a.Users).Max(b => b.Id) + 1;
+        }
+
+        private int GenerateAssetId()
+        {
+            return _accounts.SelectMany(a => a.Assets).Max(b => b.Id) + 1;
         }
     }
 }

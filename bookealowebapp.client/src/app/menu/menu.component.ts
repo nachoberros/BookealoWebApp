@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AuthService, User } from '../services/auth.service';
+import { AuthService } from '../services/auth.service';
+import { User } from '../users/users.model';
 
 @Component({
   selector: 'app-menu',
@@ -33,6 +34,7 @@ export class MenuComponent implements OnInit {
   menuItems = [
     { label: 'Home', route: '/home' },
     { label: 'Calendars', route: '/calendars' },
-    { label: 'Tennis', route: '/tennis' }
+    { label: 'Users', route: '/users' },
+    { label: 'Assets', route: '/assets' }
   ];
 }

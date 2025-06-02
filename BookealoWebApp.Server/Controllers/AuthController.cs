@@ -1,4 +1,5 @@
 ﻿using Bookealo.CommonModel.Users;
+using Bookealo.CommonModel.Users.Enum;
 using Bookealo.Services.Implementations;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +51,7 @@ public class AuthController : ControllerBase
             new(ClaimTypes.Name, user.Name),
         };
 
-        claims.Add(new Claim("permission", user.Permission.ToString()));
+        claims.Add(new Claim("permission", user.Role.ToString()));
         claims.Add(new Claim("accountId", accountId.ToString()));
         
         var token = new JwtSecurityToken(
@@ -72,7 +73,7 @@ public class AuthController : ControllerBase
                 Id = 4,
                 Name = "Charlie",
                 Email = "andresberros@gmail.com",
-                Permission = Permission.BookealoAdmin
+                Role = Role.BookealoAdmin
             };
         }
 

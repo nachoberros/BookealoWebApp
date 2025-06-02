@@ -1,4 +1,5 @@
 ﻿using Bookealo.CommonModel.Users;
+using Bookealo.Services.Implementations;
 using Bookealo.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,24 @@ namespace BookealoWebApp.Server.Controllers
 
             var results = _userRepository.GetUsers(accountId);
             return Ok(results);
+        }
+
+        [HttpGet("{userId}")]
+        public IActionResult GetById(int userId)
+        {
+            var stringAccountId = User.Claims.FirstOrDefault(c => c.Type == "accountId")?.Value;
+            if (string.IsNullOrEmpty(stringAccountId) || !int.TryParse(stringAccountId, out int accountId))
+            {
+                return Unauthorized("Account Id claim not found.");
+            }
+
+            var result = _userRepository.GetUserById(accountId, userId);
+            if (result == null)
+            {
+                return NotFound($"User with ID {userId} not found.");
+            }
+
+            return Ok(result);
         }
 
         [HttpPost]

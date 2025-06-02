@@ -1,98 +1,100 @@
-<ng-container *ngIf="loading; else formContent">
-  <div class="flex justify-center items-center h-48 text-lg font-medium text-gray-600">
-    <mat-spinner></mat-spinner>
-    <span class="ml-4">Loading...</span>
-  </div>
-</ng-container>
-
-<ng-template #formContent>
-  <h2 class="text-2xl font-bold mb-6">{{ calendar.id ? 'Edit' : 'New' }} Calendar</h2>
-
-  <form (ngSubmit)="saveCalendar()" #calendarForm="ngForm" class="grid gap-6 max-w-lg">
-
-    <!-- Name -->
-    <mat-form-field appearance="outline">
-      <mat-label>Name</mat-label>
-      <input matInput id="name" name="name" [(ngModel)]="calendar.name" required />
-    </mat-form-field>
-
-    <!-- Type -->
-    <mat-form-field appearance="outline">
-      <mat-label>Type</mat-label>
-      <mat-select id="type" name="type" [(ngModel)]="calendar.type" required>
-        <mat-option [value]="CalendarType.Tennis">Tennis</mat-option>
-        <mat-option [value]="CalendarType.Barber">Barber</mat-option>
-        <mat-option [value]="CalendarType.CarRental">Car Rental</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <!-- Dates -->
-    <mat-form-field appearance="outline">
-      <mat-label>Start Date</mat-label>
-      <input matInput type="date" name="startDate" [(ngModel)]="calendar.startDate" />
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>End Date</mat-label>
-      <input matInput type="date" name="endDate" [(ngModel)]="calendar.endDate" />
-    </mat-form-field>
-
-    <!-- Weekday Times -->
-    <div class="grid grid-cols-2 gap-4">
-      <mat-form-field appearance="outline">
-        <mat-label>Start Time</mat-label>
-        <input matInput type="time" name="startTime" [(ngModel)]="calendar.startTime" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>End Time</mat-label>
-        <input matInput type="time" name="endTime" [(ngModel)]="calendar.endTime" />
-      </mat-form-field>
+<div class="edit-calendar-form">
+  <ng-container *ngIf="loading; else formContent">
+    <div class="flex justify-center items-center h-48 text-lg font-medium text-gray-600">
+      <mat-spinner></mat-spinner>
+      <span class="ml-4">Loading...</span>
     </div>
+  </ng-container>
 
-    <!-- Saturday -->
-    <mat-checkbox [(ngModel)]="calendar.isOnSaturday" name="isOnSaturday">
-      Open on Saturday
-    </mat-checkbox>
+  <ng-template #formContent>
+    <h2 class="text-2xl font-bold mb-6">{{ calendar.id ? 'Edit' : 'New' }} Calendar</h2>
 
-    <div *ngIf="calendar.isOnSaturday" class="grid grid-cols-2 gap-4">
+    <form (ngSubmit)="saveCalendar()" #calendarForm="ngForm" class="grid gap-6 max-w-lg">
+
+      <!-- Name -->
       <mat-form-field appearance="outline">
-        <mat-label>Saturday Start Time</mat-label>
-        <input matInput type="time" name="saturdayStartTime" [(ngModel)]="calendar.saturdayStartTime" />
+        <mat-label>Name</mat-label>
+        <input matInput id="name" name="name" [(ngModel)]="calendar.name" required />
+      </mat-form-field>
+
+      <!-- Type -->
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select id="type" name="type" [(ngModel)]="calendar.type" required>
+          <mat-option [value]="CalendarType.Tennis">Tennis</mat-option>
+          <mat-option [value]="CalendarType.Barber" disabled>Barber</mat-option>
+          <mat-option [value]="CalendarType.CarRental" disabled>Car Rental</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Dates -->
+      <mat-form-field appearance="outline">
+        <mat-label>Start Date</mat-label>
+        <input matInput type="date" name="startDate" [(ngModel)]="calendar.startDate" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Saturday End Time</mat-label>
-        <input matInput type="time" name="saturdayEndTime" [(ngModel)]="calendar.saturdayEndTime" />
-      </mat-form-field>
-    </div>
-
-    <!-- Sunday -->
-    <mat-checkbox [(ngModel)]="calendar.isOnSunday" name="isOnSunday">
-      Open on Sunday
-    </mat-checkbox>
-
-    <div *ngIf="calendar.isOnSunday" class="grid grid-cols-2 gap-4">
-      <mat-form-field appearance="outline">
-        <mat-label>Sunday Start Time</mat-label>
-        <input matInput type="time" name="sundayStartTime" [(ngModel)]="calendar.sundayStartTime" />
+        <mat-label>End Date</mat-label>
+        <input matInput type="date" name="endDate" [(ngModel)]="calendar.endDate" />
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Sunday End Time</mat-label>
-        <input matInput type="time" name="sundayEndTime" [(ngModel)]="calendar.sundayEndTime" />
-      </mat-form-field>
-    </div>
+      <!-- Weekday Times -->
+      <div class="grid grid-cols-2 gap-4">
+        <mat-form-field appearance="outline">
+          <mat-label>Start Time</mat-label>
+          <input matInput type="time" name="startTime" [(ngModel)]="calendar.startTime" />
+        </mat-form-field>
 
-    <!-- Actions -->
-    <div class="flex justify-end gap-4 mt-6">
-      <button mat-flat-button color="primary" type="submit" [disabled]="calendarForm.invalid">
-        Save
-      </button>
-      <button mat-stroked-button color="warn" type="button" (click)="cancel()">
-        Cancel
-      </button>
-    </div>
+        <mat-form-field appearance="outline">
+          <mat-label>End Time</mat-label>
+          <input matInput type="time" name="endTime" [(ngModel)]="calendar.endTime" />
+        </mat-form-field>
+      </div>
 
-  </form>
-</ng-template>
+      <!-- Saturday -->
+      <mat-checkbox [(ngModel)]="calendar.isOnSaturday" name="isOnSaturday">
+        Open on Saturday
+      </mat-checkbox>
+
+      <div *ngIf="calendar.isOnSaturday" class="grid grid-cols-2 gap-4">
+        <mat-form-field appearance="outline">
+          <mat-label>Saturday Start Time</mat-label>
+          <input matInput type="time" name="saturdayStartTime" [(ngModel)]="calendar.saturdayStartTime" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Saturday End Time</mat-label>
+          <input matInput type="time" name="saturdayEndTime" [(ngModel)]="calendar.saturdayEndTime" />
+        </mat-form-field>
+      </div>
+
+      <!-- Sunday -->
+      <mat-checkbox [(ngModel)]="calendar.isOnSunday" name="isOnSunday">
+        Open on Sunday
+      </mat-checkbox>
+
+      <div *ngIf="calendar.isOnSunday" class="grid grid-cols-2 gap-4">
+        <mat-form-field appearance="outline">
+          <mat-label>Sunday Start Time</mat-label>
+          <input matInput type="time" name="sundayStartTime" [(ngModel)]="calendar.sundayStartTime" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Sunday End Time</mat-label>
+          <input matInput type="time" name="sundayEndTime" [(ngModel)]="calendar.sundayEndTime" />
+        </mat-form-field>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex justify-end gap-4 mt-6">
+        <button mat-flat-button color="primary" type="submit" [disabled]="calendarForm.invalid">
+          Save
+        </button>
+        <button mat-stroked-button color="warn" type="button" (click)="cancel()">
+          Cancel
+        </button>
+      </div>
+
+    </form>
+  </ng-template>
+</div>

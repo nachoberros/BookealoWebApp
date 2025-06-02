@@ -1,0 +1,87 @@
+.home-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem 2rem;
+  background: #fefefe;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+.home-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.highlight {
+  color: #1abc9c; /* a nice teal accent */
+}
+
+.home-intro,
+.home-conclusion {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.features-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 2rem;
+}
+
+.features-list li {
+  background: #e8f6f3;
+  margin: 0.5rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.05);
+  transition: background 0.3s ease;
+}
+
+.features-list li:hover {
+  background: #c7ecee;
+  cursor: default;
+}
+
+.home-title {
+  font-size: 3rem;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  letter-spacing: 0.05em;
+  position: relative;
+}
+
+.highlight-glow {
+  background: linear-gradient(90deg, #1abc9c, #16a085, #1abc9c);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: 900;
+  animation: glowPulse 3s ease-in-out infinite;
+  display: inline-block;
+  padding: 0 0.2em;
+  border-radius: 5px;
+  box-shadow: 0 0 8px #1abc9c88;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px #1abc9caa);
+  }
+  50% {
+    filter: drop-shadow(0 0 15px #1abc9cff);
+  }
+}
