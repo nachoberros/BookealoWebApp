@@ -1,6 +1,6 @@
 import { User } from "../../users/users.model";
 
-export interface CourtBooking {
+export interface AssetBooking {
     id: number;
     date: string;
     user: User;
@@ -16,6 +16,6 @@ export interface Court {
     id: number;
     name: string;
     description: string;
-    bookings: CourtBooking[];
-    blockings: CourtBooking[];
+    bookings: AssetBooking[];
+    blockings: AssetBooking[];
 }

@@ -4,6 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '../../../users/users.model';
 import { Court, SlotDetail } from '../tennis-calendar.model';
 import { UserService } from '../../../services/user.service';
+import { CalendarService } from '../../../services/calendar.service';
+import { Calendar } from '../../calendars.model';
 
 @Component({
   selector: 'app-tennis-calendar-admin-list',
@@ -13,10 +15,11 @@ import { UserService } from '../../../services/user.service';
   styleUrls: ['./tennis-calendar-admin-list.component.css']
 })
 export class TennisCalendarAdminListComponent {
-  @Input() courts: any[] = [];
+
   @Input() isLoading: boolean = true;
   @Input() selectedDate: string = '';
-  @Input() calendarId: string = '';
+  @Input() calendarId: string | null = null;
+  @Input() courts: Court[] | null = null;
 
   currentUser: User | null = null;
   timeSlots: string[] = [];
@@ -28,7 +31,7 @@ export class TennisCalendarAdminListComponent {
   showBookedModal: boolean = false;
   showUnblockSuccessAlert = false;
 
-  constructor(private http: HttpClient, private userService: UserService) { }
+  constructor(private http: HttpClient, private userService: UserService, private calendarService: CalendarService) { }
 
   ngOnInit(): void {
     const start = new Date();
@@ -140,7 +143,7 @@ export class TennisCalendarAdminListComponent {
   }
 
   cancelSlot(court: Court | null, time: string | null) {
-    if (!court || !time || !this.currentUser) return;
+    if (!court || !time || !this.currentUser || !this.calendarId ) return;
 
     const dateString = this.parseTimeToDate(time);
 
@@ -183,7 +186,7 @@ export class TennisCalendarAdminListComponent {
     this.selectedTime = time;
     this.showAvailableModal = true;
   }
-  
+
   onBookedSlotClick(court: Court, time: string) {
     this.selectedCourt = court;
     this.selectedTime = time;

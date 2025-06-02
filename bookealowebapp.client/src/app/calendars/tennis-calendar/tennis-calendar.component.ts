@@ -5,6 +5,7 @@ import { TennisCalendarAdminListComponent } from './tennis-calendar-admin-list/t
 import { CommonModule } from '@angular/common';
 import { Court } from './tennis-calendar.model';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
+import { Calendar } from '../calendars.model';
 
 @Component({
     selector: 'app-tennis-calendar',
@@ -15,7 +16,7 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 export class TennisCalendarComponent implements OnInit {
     isAuthenticated = false;
     calendarId: string = '';
-    results: Court[] = [];
+    courts: Court[] | null = null;
     loading: boolean = true;
     selectedDate: string = '';
 
@@ -41,9 +42,11 @@ export class TennisCalendarComponent implements OnInit {
     onSearch(date: string) {
         this.loading = true;
         this.selectedDate = date;
-        this.http.get<Court[]>(`/api/tenniscalendar?calendarId=${this.calendarId}&date=${date}`).subscribe({
+
+         this.http.get<Court[]>(`/api/tenniscalendar?calendarId=${this.calendarId}&date=${date}`).subscribe({
             next: data => {
-                this.results = data;
+                 this.courts = data;
+
                 setTimeout(() => this.loading = false, 500);
             },
             error: error => {

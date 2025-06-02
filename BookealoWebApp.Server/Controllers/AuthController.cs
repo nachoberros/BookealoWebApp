@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
             return new User()
             {
                 Id = 4,
-                Name = "Charlie",
+                Name = "Nacho",
                 Email = "andresberros@gmail.com",
                 Role = Role.BookealoAdmin
             };

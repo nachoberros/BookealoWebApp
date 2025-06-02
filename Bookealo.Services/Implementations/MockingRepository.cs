@@ -21,17 +21,25 @@ namespace Bookealo.Services.Implementations
 
         public List<Court> GetCourts(int accountId, int calendarId)
         {
-            var courts = _accounts.FirstOrDefault(a => a.Id == accountId)?
+            var assets = _accounts.FirstOrDefault(a => a.Id == accountId)?
                             .Calendars.FirstOrDefault(c => c.Id == calendarId)?
-                            .Assets.OfType<Court>()
+                            .Assets.Where(a => a.Type == CommonModel.Assets.Enum.AssetType.TennisCourt)
                             .ToList();
 
-            if (courts == null || courts.Count < 1)
+            if (assets == null || assets.Count < 1)
             {
-                return new List<Court>() { };
+                return [];
             }
 
-            return courts;
+            return assets.Select(a => new Court()
+            {
+                Id = a.Id,
+                Name = a.Name,
+                Description = a.Description,
+                Blockings = a.Blockings,
+                Bookings = a.Bookings,
+                Type = a.Type
+            }).ToList();
         }
 
         public void AddBooking(BookingRequest bookingRequest)
@@ -349,13 +357,13 @@ namespace Bookealo.Services.Implementations
             var courts = GetMockedTennisCourts(users);
             var calendars = GetMockedCalendars(users, courts.Cast<Asset>().ToList());
 
-            var charlie = users.FirstOrDefault(u => u.Name.ToLowerInvariant().Equals("charlie"));
-            if (charlie == null)
+            var nacho = users.FirstOrDefault(u => u.Name.ToLowerInvariant().Equals("nacho"));
+            if (nacho == null)
             {
-                throw new InvalidOperationException("charlie needs to exist");
+                throw new InvalidOperationException("Nacho needs to exist");
             }
 
-            return new Account() { Id = 1, Name = "Charlies Tennis Club", Owner = charlie, Assets = courts.Cast<Asset>().ToList(), Calendars = calendars, Users = users };
+            return new Account() { Id = 1, Name = "Charlies Tennis Club", Owner = nacho, Assets = courts.Cast<Asset>().ToList(), Calendars = calendars, Users = users };
         }
 
         private User GetUser(int? userId)
@@ -379,7 +387,7 @@ namespace Bookealo.Services.Implementations
             var alice = users.First(u => u.Name == "Alice");
             var bob = users.First(u => u.Name == "Bob");
             var mike = users.First(u => u.Name == "Mike");
-            var charlie = users.First(u => u.Name == "Charlie");
+            var nacho = users.First(u => u.Name == "Nacho");
 
             List<Court> tennisCourts = new()
             {
@@ -408,12 +416,12 @@ namespace Bookealo.Services.Implementations
                     Description = "Hard",
                     Bookings =
                     [
-                        new AssetBooking { Id = 5, Date = DateTime.Today.AddHours(18), User = charlie },
+                        new AssetBooking { Id = 5, Date = DateTime.Today.AddHours(18), User = nacho },
                         new AssetBooking { Id = 6, Date = DateTime.Today.AddHours(19), User = bob }
                     ],
                     Blockings =
                     [
-                        new AssetBooking { Id = 5, Date = DateTime.Today.AddHours(11), User = charlie },
+                        new AssetBooking { Id = 5, Date = DateTime.Today.AddHours(11), User = nacho },
                         new AssetBooking { Id = 6, Date = DateTime.Today.AddHours(12), User = bob }
                     ]
                 },
@@ -439,12 +447,12 @@ namespace Bookealo.Services.Implementations
                     Bookings =
                     [
                         new AssetBooking { Id = 9, Date = DateTime.Today.AddHours(17), User = alice },
-                        new AssetBooking { Id = 10, Date = DateTime.Today.AddHours(14), User = charlie }
+                        new AssetBooking { Id = 10, Date = DateTime.Today.AddHours(14), User = nacho }
                     ],
                     Blockings =
                     [
                         new AssetBooking { Id = 9, Date = DateTime.Today.AddHours(11), User = alice },
-                        new AssetBooking { Id = 10, Date = DateTime.Today.AddHours(12), User = charlie }
+                        new AssetBooking { Id = 10, Date = DateTime.Today.AddHours(12), User = nacho }
                     ]
                 }
             };
@@ -478,7 +486,7 @@ namespace Bookealo.Services.Implementations
             new()
             {
                 Id = 4,
-                Name = "Charlie",
+                Name = "Nacho",
                 Email = "andresberros@gmail.com",
                 Role = Role.BookealoAdmin
             }];
