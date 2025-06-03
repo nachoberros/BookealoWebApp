@@ -1,5 +1,10 @@
-﻿
-@if (showMenu()) {
-  <app-menu></app-menu>
+﻿@if (showMenu()) {
+<app-menu></app-menu>
 }
 <router-outlet></router-outlet>
+@if(successMessage)
+{
+<div class="success-alert">
+  {{ successMessage }}
+</div>
+}

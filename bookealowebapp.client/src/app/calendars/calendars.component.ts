@@ -19,6 +19,7 @@ export class CalendarsComponent implements OnInit {
     public CalendarType = CalendarType;
     calendars: Calendar[] = [];
     loading: boolean = false;
+    showSuccessAlert = false;
 
     constructor(
         private http: HttpClient,
@@ -68,14 +69,20 @@ export class CalendarsComponent implements OnInit {
         const path = this.getUrlPathByCalendarType(calendar.type);
         const publicUrl = `https://localhost:4200/public/${path}/${calendar.id}`;
         this.clipboard.copy(publicUrl);
-        alert('Public link copied!');
+        this.showSuccessAlert = true;
+        setTimeout(() => {
+            this.showSuccessAlert = false;
+        }, 3000);
     }
 
     copyAdminLink(calendar: Calendar) {
         const path = this.getUrlPathByCalendarType(calendar.type);
         const privateUrl = `https://localhost:4200/admin/${path}/${calendar.id}?token=XYZ`;
         this.clipboard.copy(privateUrl);
-        alert('Private link copied!');
+        this.showSuccessAlert = true;
+        setTimeout(() => {
+            this.showSuccessAlert = false;
+        }, 3000);
     }
 
     private getUrlPathByCalendarType(type: CalendarType): string {

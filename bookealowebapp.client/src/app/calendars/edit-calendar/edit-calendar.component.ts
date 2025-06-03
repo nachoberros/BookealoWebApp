@@ -11,7 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { User } from '../../users/users.model';
-import { forkJoin } from 'rxjs';
+import { AlertService } from '../../services/alert.service';
 
 @Component({
     selector: 'app-edit-calendar',
@@ -49,34 +49,35 @@ export class EditCalendarComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private http = inject(HttpClient);
     private router = inject(Router);
+    private alertService = inject(AlertService);
 
     ngOnInit(): void {
         const idParam = this.route.snapshot.paramMap.get('calendarId');
+        this.calendarId = idParam || '';
+        this.loading = true;
 
-        if (idParam) {
-            this.calendarId = idParam;
-            this.loading = true;
-
-            forkJoin({
-                calendar: this.http.get<Calendar>(`/api/calendar/${this.calendarId}`),
-                users: this.http.get<User[]>(`/api/user`),
-                assets: this.http.get<Asset[]>(`/api/asset`)
-            }).subscribe({
-                next: ({ calendar, users, assets }) => {
+        if (this.calendarId) {
+            this.http.get<Calendar>(`/api/calendar/${this.calendarId}`).subscribe({
+                next: calendar => {
                     this.formatBackendDates(calendar);
                     this.calendar = calendar;
-                    this.accountUsers = users;
-                    this.accountAssets = assets;
                     this.selectedUserIds = calendar.users?.map(u => u.id) || [];
                     this.selectedAssetIds = calendar.assets?.map(a => a.id) || [];
-                    this.loading = false;
                 },
-                error: err => {
-                    console.error('Failed to load data:', err);
-                    this.loading = false;
-                }
+                error: err => console.error('Failed to load calendar:', err)
             });
         }
+
+        this.http.get<User[]>(`/api/user`).subscribe({
+            next: users => this.accountUsers = users,
+            error: err => console.error('Failed to load users:', err)
+        });
+
+        this.http.get<Asset[]>(`/api/asset`).subscribe({
+            next: assets => this.accountAssets = assets,
+            error: err => console.error('Failed to load assets:', err),
+            complete: () => this.loading = false
+        });
     }
 
     saveCalendar() {
@@ -101,7 +102,7 @@ export class EditCalendarComponent implements OnInit {
 
         request.subscribe({
             next: () => {
-                alert(`Calendar ${this.calendarId ? 'updated' : 'created'} successfully!`);
+                this.alertService.showSuccess(`Calendar ${this.calendarId ? 'updated' : 'created'} successfully!`);
                 this.router.navigate(['/calendars']);
             },
             error: err => {

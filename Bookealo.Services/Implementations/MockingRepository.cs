@@ -168,6 +168,8 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException($"Calendar with name {calendar.Name} is already in the list.");
             }
 
+            calendar.Id = GenerateCalendarId();
+
             account.Calendars.Add(calendar);
         }
 
@@ -260,6 +262,8 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException($"User with email {user.Email} is already in the list.");
             }
 
+            user.Id = GenerateUserId();
+
             account.Users.Add(user);
         }
 
@@ -320,11 +324,13 @@ namespace Bookealo.Services.Implementations
                 throw new InvalidOperationException("Account was not found");
             }
 
-            var mockedAsset = account.Assets.FirstOrDefault(c => c.Id == asset.Id);
+            var mockedAsset = account.Assets.FirstOrDefault(c => c.Name.ToLowerInvariant() == asset.Name.ToLowerInvariant());
             if (mockedAsset != null)
             {
                 throw new InvalidOperationException($"Asset with name {asset.Name} is already found.");
             }
+
+            asset.Id = GenerateAssetId();
 
             account.Assets.Add(asset);
         }
@@ -535,6 +541,11 @@ namespace Bookealo.Services.Implementations
         private int GenerateAssetId()
         {
             return _accounts.SelectMany(a => a.Assets).Max(b => b.Id) + 1;
+        }
+
+        private int GenerateCalendarId()
+        {
+            return _accounts.SelectMany(a => a.Calendars).Max(b => b.Id) + 1;
         }
     }
 }

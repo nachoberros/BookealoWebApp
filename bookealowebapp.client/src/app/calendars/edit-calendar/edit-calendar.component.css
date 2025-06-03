@@ -2,10 +2,6 @@
     margin: 1%;
 }
 
-.edit-calendar-form .mat-mdc-form-field{
-    margin:1%;
-}
-
 .form-divider {
   border: 1px solid #ccc;
   padding: 1rem;
@@ -16,4 +12,21 @@
 
 .full-width {
   width: 100%;
+}
+
+mat-form-field {
+  --mat-form-field-container-height: 36px;
+  font-size: 0.875rem;
+  padding-right: 10px;
+}
+
+mat-form-field .mat-form-field-infix {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  
+}
+
+.mat-input-element {
+  padding: 0.25em 0;
+  height: 1.5em;
 }

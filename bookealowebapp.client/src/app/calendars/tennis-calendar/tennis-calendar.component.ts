@@ -5,7 +5,7 @@ import { TennisCalendarAdminListComponent } from './tennis-calendar-admin-list/t
 import { CommonModule } from '@angular/common';
 import { Court } from './tennis-calendar.model';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { Calendar } from '../calendars.model';
+import { Calendar, CalendarType } from '../calendars.model';
 
 @Component({
     selector: 'app-tennis-calendar',
@@ -19,6 +19,7 @@ export class TennisCalendarComponent implements OnInit {
     courts: Court[] | null = null;
     loading: boolean = true;
     selectedDate: string = '';
+    calendar: Calendar | null = null;
 
     constructor(private http: HttpClient, private route: ActivatedRoute, private router: Router) { }
 
@@ -43,11 +44,21 @@ export class TennisCalendarComponent implements OnInit {
         this.loading = true;
         this.selectedDate = date;
 
-         this.http.get<Court[]>(`/api/tenniscalendar?calendarId=${this.calendarId}&date=${date}`).subscribe({
+        this.http.get<Calendar[]>(`/api/calendar?calendarId=${this.calendarId}`).subscribe({
             next: data => {
-                 this.courts = data;
+                this.calendar = data[0];
 
-                setTimeout(() => this.loading = false, 500);
+                this.http.get<Court[]>(`/api/tenniscalendar?calendarId=${this.calendarId}&date=${date}`).subscribe({
+                    next: data => {
+                        this.courts = data;
+
+                        setTimeout(() => this.loading = false, 500);
+                    },
+                    error: error => {
+                        console.error('Failed to fetch court data', error);
+                        this.loading = false;
+                    }
+                });
             },
             error: error => {
                 console.error('Failed to fetch court data', error);

@@ -18,7 +18,7 @@ export class TennisCalendarAdminListComponent {
 
   @Input() isLoading: boolean = true;
   @Input() selectedDate: string = '';
-  @Input() calendarId: string | null = null;
+  @Input() calendar: Calendar | null = null;
   @Input() courts: Court[] | null = null;
 
   currentUser: User | null = null;
@@ -34,16 +34,13 @@ export class TennisCalendarAdminListComponent {
   constructor(private http: HttpClient, private userService: UserService, private calendarService: CalendarService) { }
 
   ngOnInit(): void {
-    const start = new Date();
-    start.setHours(10, 0, 0, 0);
-
-    for (let i = 0; i < 24; i++) {
-      const slot = new Date(start.getTime() + i * 30 * 60000);
-      const time = slot.toTimeString().slice(0, 5); // e.g., "10:00"
-      this.timeSlots.push(time); // e.g. "10:00"
-    }
-
     this.currentUser = this.userService.getCurrentUser();
+  }
+
+  ngOnChanges(): void {
+    if (this.calendar) {
+      this.generateTimeSlots();
+    }
   }
 
 
@@ -64,7 +61,7 @@ export class TennisCalendarAdminListComponent {
     if (!court || !time) return;
 
     const payload = {
-      CalendarId: this.calendarId,
+      CalendarId: this.calendar?.id,
       AssetId: court.id,
       Date: this.parseTimeToDate(time).toLocaleString('sv-SE').replace(' ', 'T'),
       UserId: this.currentUser?.id
@@ -92,7 +89,7 @@ export class TennisCalendarAdminListComponent {
     if (!court || !time) return;
 
     const payload = {
-      CalendarId: this.calendarId,
+      CalendarId: this.calendar?.id,
       AssetId: court.id,
       Date: this.parseTimeToDate(time).toLocaleString('sv-SE').replace(' ', 'T'),
       UserId: this.currentUser?.id
@@ -119,7 +116,7 @@ export class TennisCalendarAdminListComponent {
     if (!court || !time) return;
 
     const payload = {
-      CalendarId: this.calendarId,
+      CalendarId: this.calendar?.id,
       AssetId: court.id,
       Date: this.parseTimeToDate(time).toLocaleString('sv-SE').replace(' ', 'T'),
       UserId: this.currentUser?.id
@@ -143,12 +140,12 @@ export class TennisCalendarAdminListComponent {
   }
 
   cancelSlot(court: Court | null, time: string | null) {
-    if (!court || !time || !this.currentUser || !this.calendarId ) return;
+    if (!court || !time || !this.currentUser || !this.calendar?.id) return;
 
     const dateString = this.parseTimeToDate(time);
 
     const params = {
-      CalendarId: this.calendarId,
+      CalendarId: this.calendar?.id,
       CourtId: court.id,
       Date: this.parseTimeToDate(time).toLocaleString('sv-SE').replace(' ', 'T'),
       UserId: this.currentUser.id
@@ -175,7 +172,7 @@ export class TennisCalendarAdminListComponent {
     if (!this.selectedDate) return;
 
     this.http
-      .get<Court[]>(`/api/tenniscalendar?calendarId=${this.calendarId}&date=${this.selectedDate}`)
+      .get<Court[]>(`/api/tenniscalendar?calendarId=${this.calendar?.id}&date=${this.selectedDate}`)
       .subscribe(data => {
         this.courts = data;
       });
@@ -234,5 +231,43 @@ export class TennisCalendarAdminListComponent {
       return bookingTime.getHours() === selectedDate.getHours() &&
         bookingTime.getMinutes() === selectedDate.getMinutes();
     });
+  }
+
+  generateTimeSlots(): void {
+    this.timeSlots = [];
+
+    const today = new Date().getDay(); // 0 = Sunday, 6 = Saturday
+    let startTime: string | undefined;
+    let endTime: string | undefined;
+
+    if (today === 6 && this.calendar?.isOnSaturday) {
+      startTime = this.calendar.saturdayStartTime;
+      endTime = this.calendar.saturdayEndTime;
+    } else if (today === 0 && this.calendar?.isOnSunday) {
+      startTime = this.calendar.sundayStartTime;
+      endTime = this.calendar.sundayEndTime;
+    } else {
+      startTime = this.calendar?.startTime;
+      endTime = this.calendar?.endTime;
+    }
+
+    if (!startTime || !endTime) return;
+
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+
+    const start = new Date();
+    start.setHours(startHour, startMinute, 0, 0);
+
+    const end = new Date();
+    end.setHours(endHour, endMinute, 0, 0);
+
+    const current = new Date(start);
+
+    while (current < end) {
+      const time = current.toTimeString().slice(0, 5); // e.g., "09:30"
+      this.timeSlots.push(time);
+      current.setMinutes(current.getMinutes() + 30);
+    }
   }
 }

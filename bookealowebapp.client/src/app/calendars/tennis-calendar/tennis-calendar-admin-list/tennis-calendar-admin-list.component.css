@@ -216,7 +216,6 @@ td:has(.blocked-court-cell) {
   opacity: 0.85;
 }
 
-/* Success alert already defined earlier */
 .success-alert {
   position: fixed;
   bottom: 1rem;

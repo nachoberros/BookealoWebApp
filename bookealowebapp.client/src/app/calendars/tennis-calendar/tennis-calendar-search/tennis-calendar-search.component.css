@@ -1,3 +1,8 @@
+.tennis-calendar-header {
+  margin: 1%;
+  margin-left: 2%;
+}
+
 .search-form {
   display: flex;
   gap: 1rem;
@@ -5,11 +10,11 @@
   align-items: center;
 }
 
-.search-form div{
+.search-form div {
   margin: 1%;
 }
 
-.form-label{
+.form-label {
   padding: 10px;
 }
 
