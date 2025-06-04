@@ -14,5 +14,5 @@ export const routes: Routes = [
   { path: 'assets', loadComponent: () => import('./assets/assets.component').then(m => m.AssetsComponent), canActivate: [AuthGuard] },
   { path: 'assets/edit/:assetId', loadComponent: () => import('./assets/edit-asset/edit-asset.component').then(m => m.EditAssetComponent), canActivate: [AuthGuard] },
   { path: 'assets/new',  loadComponent: () => import('./assets/edit-asset/edit-asset.component').then(m => m.EditAssetComponent), canActivate: [AuthGuard] },
-  { path: 'admin/tenniscalendar/:calendarId', loadComponent:() => import('./calendars/tennis-calendar/tennis-calendar.component').then(m => m.TennisCalendarComponent), canActivate: [AuthGuard]}
+  { path: 'calendars/tenniscalendar/:calendarId', loadComponent:() => import('./calendars/tennis-calendar/tennis-calendar.component').then(m => m.TennisCalendarComponent), canActivate: [AuthGuard]}
 ];

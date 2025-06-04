@@ -6,15 +6,17 @@ import { Court, SlotDetail } from '../tennis-calendar.model';
 import { UserService } from '../../../services/user.service';
 import { CalendarService } from '../../../services/calendar.service';
 import { Calendar } from '../../calendars.model';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-tennis-calendar-admin-list',
+  selector: 'app-tennis-calendar-public-list',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './tennis-calendar-admin-list.component.html',
-  styleUrls: ['./tennis-calendar-admin-list.component.css']
+  imports: [CommonModule, FormsModule],
+  templateUrl: './tennis-calendar-public-list.component.html',
+  styleUrls: ['./tennis-calendar-public-list.component.css']
 })
-export class TennisCalendarAdminListComponent {
+export class TennisCalendarPublicListComponent {
 
   @Input() isLoading: boolean = true;
   @Input() selectedDate: string = '';
@@ -27,14 +29,17 @@ export class TennisCalendarAdminListComponent {
   selectedTime: string | null = null;
   showAvailableModal: boolean = false;
   showSuccessAlert = false;
-  showUnblockedModal: boolean = false;
   showBookedModal: boolean = false;
-  showUnblockSuccessAlert = false;
+  showEnterDetailsModal: boolean = false;
+  showEnterDetailsConfirmationModal: boolean = false;
+  public guestUserEmail: string | null = null;
+  public guestName: string | null = null;
 
-  constructor(private http: HttpClient, private userService: UserService, private calendarService: CalendarService) { }
+  constructor(private http: HttpClient, private userService: UserService, private calendarService: CalendarService, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.currentUser = this.userService.getCurrentUser();
+    this.guestUserEmail = this.route.snapshot.queryParamMap.get('guestEmail');
   }
 
   ngOnChanges(): void {
@@ -43,68 +48,45 @@ export class TennisCalendarAdminListComponent {
     }
   }
 
-
   getSlotDetails(court: Court, time: string): SlotDetail | null {
     const selectedDate = this.parseTimeToDate(time);
 
     const booking = this.FindCourtBooking(court, selectedDate);
-    const description = booking ? booking.user.name : "";
-    const isBooked = description ? true : false;
+    let isMyBooking = false;
+    let description = '';
+
+    let isBooked = booking ? true : false;
+
+    if (this.guestUserEmail && this.guestUserEmail.toLowerCase() == booking?.user.email?.toLowerCase()) {
+      description = booking?.user.name;
+      isMyBooking = true; 
+      isBooked = false;
+    }
 
     const blocking = this.FindCourtBlocking(court, selectedDate);
     const isBlocked = blocking ? true : false;
 
-    const isMyBooking = false;
     return { description, isBooked, isBlocked, isMyBooking };
   }
 
-  confirmBooking(court: Court | null, time: string | null) {
+  confirmBookingDetails(court: Court | null, time: string | null, name: string | null, email: string | null) {
     if (!court || !time) return;
 
     const payload = {
       CalendarId: this.calendar?.id,
       AssetId: court.id,
       Date: this.parseTimeToDate(time).toLocaleString('sv-SE').replace(' ', 'T'),
-      UserId: this.currentUser?.id
+      UserId: this.currentUser?.id,
+      Name: name,
+      Email: email
     };
 
-    this.http.post('/api/tenniscalendar', payload).subscribe({
+    this.http.post('/api/tenniscalendar/public', payload).subscribe({
       next: () => {
+        this.showEnterDetailsModal = false;
         this.showAvailableModal = false;
-        this.showSuccessAlert = true;
-        this.refreshBookings();
-
-        setTimeout(() => {
-          this.showSuccessAlert = false;
-        }, 3000);
-      },
-      error: (err: any) => {
-        console.error('Booking failed', err);
-        this.showAvailableModal = false;
-
-      }
-    });
-  }
-
-  blockSlot(court: Court | null, time: string | null) {
-    if (!court || !time) return;
-
-    const payload = {
-      CalendarId: this.calendar?.id,
-      AssetId: court.id,
-      Date: this.parseTimeToDate(time).toLocaleString('sv-SE').replace(' ', 'T'),
-      UserId: this.currentUser?.id
-    };
-
-    this.http.put('/api/tenniscalendar/block', payload).subscribe({
-      next: () => {
-        this.showAvailableModal = false;
-        this.showSuccessAlert = true;
-        this.refreshBookings();
-
-        setTimeout(() => {
-          this.showSuccessAlert = false;
-        }, 3000);
+        this.showEnterDetailsConfirmationModal = true;
+        this.guestUserEmail = email;
       },
       error: (err: any) => {
         console.error('Booking failed', err);
@@ -113,31 +95,11 @@ export class TennisCalendarAdminListComponent {
     });
   }
 
-  unblockSlot(court: Court | null, time: string | null) {
-    if (!court || !time) return;
-
-    const payload = {
-      CalendarId: this.calendar?.id,
-      AssetId: court.id,
-      Date: this.parseTimeToDate(time).toLocaleString('sv-SE').replace(' ', 'T'),
-      UserId: this.currentUser?.id
-    };
-
-    this.http.put('/api/tenniscalendar/unblock', payload).subscribe({
-      next: () => {
-        this.showUnblockedModal = false;
-        this.showUnblockSuccessAlert = true;
-        this.refreshBookings();
-
-        setTimeout(() => {
-          this.showUnblockSuccessAlert = false;
-        }, 3000);
-      },
-      error: (err: any) => {
-        console.error('Booking failed', err);
-        this.showUnblockedModal = false;
-      }
-    });
+  continueBooking(court: Court | null, time: string | null) {
+    this.selectedCourt = court;
+    this.selectedTime = time;
+    this.showAvailableModal = false;
+    this.showEnterDetailsModal = true;
   }
 
   cancelSlot(court: Court | null, time: string | null) {
@@ -185,16 +147,13 @@ export class TennisCalendarAdminListComponent {
     this.showAvailableModal = true;
   }
 
-  onBookedSlotClick(court: Court, time: string) {
-    this.selectedCourt = court;
-    this.selectedTime = time;
-    this.showBookedModal = true;
-  }
-
-  onBlockedSlotClick(court: Court, time: string) {
-    this.selectedCourt = court;
-    this.selectedTime = time;
-    this.showUnblockedModal = true;
+  onMyBookedSlotClick(court: Court, time: string) {
+    const booking = this.FindCourtBooking(court, new Date(`${this.selectedDate}T${time}`));
+    if (this.guestUserEmail && this.guestUserEmail.toLowerCase() == booking?.user.email?.toLowerCase()) {
+      this.selectedCourt = court;
+      this.selectedTime = time;
+      this.showBookedModal = true;
+    }
   }
 
   getBookingName(court: Court, time: string): string | null {
@@ -208,6 +167,7 @@ export class TennisCalendarAdminListComponent {
     if (!detail) return 'unknown';
     if (detail.isBlocked) return 'blocked';
     if (detail.isBooked) return 'booked';
+    if (detail.isMyBooking) return 'mybooking';
     return 'available';
   }
 

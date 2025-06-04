@@ -1,0 +1,139 @@
+@if(courts)
+{
+<div *ngIf="isLoading" class="loading-container">
+  <div class="gradient-spinner"></div>
+</div>
+<div *ngIf="!isLoading">
+  <table class="booking-grid">
+    <thead>
+      <tr>
+        <th cclass="narrow-column">Time</th>
+        <th *ngFor="let court of courts">{{ court.name }} - {{ court.description }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let slot of timeSlots">
+        <td class="narrow-column">{{ slot }}</td>
+        <td *ngFor="let court of courts" [ngSwitch]="getSlotStatus(getSlotDetails(court, slot))">
+          <div *ngSwitchCase="'booked'" class="booked-court-cell">
+             
+          </div>
+          <div *ngSwitchCase="'mybooking'" class="my-booked-court-cell" (click)="onMyBookedSlotClick(court, slot)">
+             {{ getSlotDetails(court, slot)?.description }}
+          </div>
+          <div *ngSwitchCase="'available'" class="available-court-cell" (click)="onAvailableSlotClick(court, slot)">
+          </div>
+          <div *ngSwitchCase="'blocked'" class="blocked-court-cell">
+          </div>
+          <div *ngSwitchDefault>
+            Unknown
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+}@else{
+<p class="booking-grid">No bookings found. Try searching above.</p>
+}
+
+<!-- Backdrop -->
+<div class="modal-backdrop" *ngIf="showAvailableModal" (click)="showAvailableModal = false"></div>
+
+<!-- Success Alert -->
+<div class="success-alert" *ngIf="showSuccessAlert">
+  ✅ Slot updated successfully!
+</div>
+
+<!-- Available Slot Modal -->
+<div class="modal" *ngIf="showAvailableModal">
+  <h3>🎾 Booking Court</h3>
+  <p><strong>Court:</strong> {{ selectedCourt?.name }}</p>
+  <p><strong>Time:</strong> {{ selectedTime }}</p>
+  <div class="modal-buttons">
+    <button class="btn cancel" (click)="showAvailableModal = false">Cancel</button>
+    <button class="btn confirm" (click)="continueBooking(selectedCourt, selectedTime)">Continue</button>
+  </div>
+</div>
+
+
+<!-- Backdrop -->
+<div class="modal-backdrop" *ngIf="showBookedModal" (click)="showBookedModal = false"></div>
+
+<!-- Booked Slot Modal -->
+<div class="modal" *ngIf="showBookedModal">
+  <h3>📌 Existing Booking</h3>
+  <p><strong>Court:</strong> {{ selectedCourt?.name }}</p>
+  <p><strong>Time:</strong> {{ selectedTime }}</p>
+  <div class="modal-buttons">
+    <button class="btn cancel" (click)="showBookedModal = false">Close</button>
+    <button class="btn danger" (click)="cancelSlot(selectedCourt, selectedTime)">Cancel Booking</button>
+  </div>
+</div>
+
+<!-- Enter Details Modal -->
+<form class="modal enter-details-modal" *ngIf="showEnterDetailsModal" #detailsForm="ngForm" novalidate>
+  <h3 class="modal-title">📌 Enter Booking Details</h3>
+
+  <div class="modal-info">
+    <p><strong>Court:</strong> {{ selectedCourt?.name }}</p>
+    <p><strong>Time:</strong> {{ selectedTime }}</p>
+  </div>
+
+  <!-- Name Field -->
+  <div class="form-group">
+    <label for="guestName">Name</label>
+    <input
+      id="guestName"
+      name="guestName"
+      type="text"
+      [(ngModel)]="guestName"
+      required
+      #nameModel="ngModel"
+    />
+    <div class="error" *ngIf="nameModel.invalid && nameModel.touched">
+      Name is required.
+    </div>
+  </div>
+
+  <!-- Email Field -->
+  <div class="form-group">
+    <label for="guestEmail">Email</label>
+    <input
+      id="guestEmail"
+      name="guestEmail"
+      type="email"
+      [(ngModel)]="guestUserEmail"
+      required
+      email
+      #emailModel="ngModel"
+    />
+    <div class="error" *ngIf="emailModel.invalid && emailModel.touched">
+      <span *ngIf="emailModel.errors?.['required']">Email is required.</span>
+      <span *ngIf="emailModel.errors?.['email']">Invalid email format.</span>
+    </div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="modal-buttons">
+    <button type="button" class="btn cancel" (click)="showEnterDetailsModal = false; showAvailableModal = false">
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="btn confirm"
+      [disabled]="detailsForm.invalid"
+      (click)="confirmBookingDetails(selectedCourt, selectedTime, guestName, guestUserEmail)">
+      Request Booking
+    </button>
+  </div>
+</form>
+
+<!-- Email Confirmation Instructions confirm -->
+<div class="modal" *ngIf="showEnterDetailsConfirmationModal">
+  <h3>📌 Confirm Booking by email</h3>
+  <p>Please confirm the booking we sent you via email</p>
+  <div class="modal-buttons">
+    <button class="btn cancel" (click)="showEnterDetailsConfirmationModal = false; refreshBookings()">Ok</button>
+  </div>
+</div>

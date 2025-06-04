@@ -67,7 +67,7 @@ export class CalendarsComponent implements OnInit {
 
     copyPublicLink(calendar: Calendar) {
         const path = this.getUrlPathByCalendarType(calendar.type);
-        const publicUrl = `https://localhost:4200/public/${path}/${calendar.id}`;
+        const publicUrl = `https://localhost:4200/calendars/${path}/${calendar.id}`;
         this.clipboard.copy(publicUrl);
         this.showSuccessAlert = true;
         setTimeout(() => {
@@ -77,7 +77,7 @@ export class CalendarsComponent implements OnInit {
 
     copyAdminLink(calendar: Calendar) {
         const path = this.getUrlPathByCalendarType(calendar.type);
-        const privateUrl = `https://localhost:4200/admin/${path}/${calendar.id}?token=XYZ`;
+        const privateUrl = `https://localhost:4200/calendars/${path}/${calendar.id}?token=XYZ`;
         this.clipboard.copy(privateUrl);
         this.showSuccessAlert = true;
         setTimeout(() => {

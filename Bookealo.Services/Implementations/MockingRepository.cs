@@ -66,6 +66,42 @@ namespace Bookealo.Services.Implementations
             court.Bookings.Add(newBooking);
         }
 
+        public void AddPublicBooking(PublicBookingRequest bookingRequest)
+        {
+            if (bookingRequest == null || string.IsNullOrWhiteSpace(bookingRequest.Email))
+            {
+                throw new InvalidOperationException($"User email is mandatory");
+            }
+
+            var court = GetCourts(bookingRequest.AccountId, bookingRequest.CalendarId).FirstOrDefault(c => c.Id == bookingRequest.AssetId);
+            if (court == null)
+            {
+                throw new InvalidOperationException($"Court with ID {bookingRequest.AssetId} not found.");
+            }
+
+            var slot = court.Bookings.FirstOrDefault(b => b.Date == bookingRequest.Date);
+            if (slot != null)
+            {
+                throw new InvalidOperationException("This time slot is already booked.");
+            }
+
+            var publicUser = GetUserByEmail(bookingRequest?.Email);
+            if(publicUser == null)
+            {
+                publicUser = new User() { Email = bookingRequest.Email, Name = bookingRequest.Name, Role = Role.Guest };
+                AddUser(bookingRequest.AccountId, publicUser);
+            }
+
+            var newBooking = new AssetBooking
+            {
+                Id = GenerateBookingId(),
+                Date = bookingRequest.Date,
+                User = publicUser
+            };
+
+            court.Bookings.Add(newBooking);
+        }
+
         public void CancelBooking(BookingRequest bookingRequest)
         {
             var court = GetCourts(bookingRequest.AccountId, bookingRequest.CalendarId).FirstOrDefault(c => c.Id == bookingRequest.AssetId);
@@ -383,6 +419,22 @@ namespace Bookealo.Services.Implementations
             if (user == null)
             {
                 throw new InvalidOperationException($"User with ID {userId} not found.");
+            }
+
+            return user;
+        }
+
+        private User? GetUserByEmail(string? email)
+        {
+            if (email == null)
+            {
+                throw new ArgumentNullException(nameof(email), "User Email cannot be null.");
+            }
+
+            var user = _accounts.SelectMany(a => a.Users).FirstOrDefault(u => u.Email.ToLowerInvariant() == email.ToLowerInvariant());
+            if (user == null)
+            {
+                return null;
             }
 
             return user;

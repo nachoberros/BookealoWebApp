@@ -10,6 +10,7 @@ export interface SlotDetail {
     description: string;
     isBooked: boolean;
     isBlocked: boolean;
+    isMyBooking: boolean;
 }
 
 export interface Court {

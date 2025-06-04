@@ -6,6 +6,7 @@ namespace Bookealo.Services.Interfaces
     {
         List<Court> Search(int accountId, int calendarId, DateTime? date);
         void Save(BookingRequest booking);
+        void SavePublicBooking(PublicBookingRequest booking);
         void Cancel(BookingRequest booking);
         void Block(BookingRequest booking);
         void Unblock(BookingRequest booking);

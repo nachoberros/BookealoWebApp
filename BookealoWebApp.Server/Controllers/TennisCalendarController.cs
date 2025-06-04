@@ -20,7 +20,7 @@ namespace BookealoWebApp.Server.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll([FromQuery]int calendarId, DateTime? date)
+        public IActionResult GetAll([FromQuery] int calendarId, DateTime? date)
         {
             if (AccountId == null) return Unauthorized("Account Id claim not found.");
 
@@ -37,6 +37,17 @@ namespace BookealoWebApp.Server.Controllers
             _courtRepository.Save(booking);
             return Ok();
         }
+
+        [HttpPost("public")]
+        public IActionResult Save([FromBody] PublicBookingRequest booking)
+        {
+            if (AccountId == null) return Unauthorized("Account Id claim not found.");
+            booking.AccountId = AccountId.Value;
+
+            _courtRepository.SavePublicBooking(booking);
+            return Ok();
+        }
+
 
         [HttpDelete]
         public IActionResult Cancel([FromQuery]int calendarId, int courtId, [FromQuery] DateTime date, [FromQuery] int userId)

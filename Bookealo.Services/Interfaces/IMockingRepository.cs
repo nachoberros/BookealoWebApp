@@ -10,6 +10,7 @@ namespace Bookealo.Services.Interfaces
     {
         List<Court> GetCourts(int accountId, int calendarId);
         void AddBooking(BookingRequest bookingRequest);
+        void AddPublicBooking(PublicBookingRequest bookingRequest);
         void CancelBooking(BookingRequest bookingRequest);
         void BlockSlot(BookingRequest bookingRequest);
         void UnblockSlot(BookingRequest bookingRequest);

@@ -18,6 +18,11 @@ namespace Bookealo.Services.Implementations
             _mockingRepository.AddBooking(booking);
         }
 
+        public void SavePublicBooking(PublicBookingRequest booking)
+        {
+            _mockingRepository.AddPublicBooking(booking);
+        }
+
         public void Cancel(BookingRequest booking)
         {
             _mockingRepository.CancelBooking(booking);
