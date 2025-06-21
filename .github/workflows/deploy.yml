@@ -24,12 +24,15 @@ jobs:
           node-version: '20'
 
       - name: Install Angular
+        working-directory: ./bookealowebapp.client
         run: npm install
 
       - name: Install dependencies
+        working-directory: ./bookealowebapp.client
         run: npm ci
 
       - name: Build Angular app
+        working-directory: ./bookealowebapp.client
         run: npm run build -- --output-path=dist/bookealowebapp.client --configuration=production
 
       - name: Deploy to Azure Static Web Apps
@@ -38,5 +41,5 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "."   
-          output_location: "dist/bookealowebapp.client"
+          app_location: "bookealowebapp.client"   
+          output_location: "bookealowebapp.client/dist"
