@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "bookealowebapp.client": {
+    "bookealowebapp": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -23,7 +23,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/bookealowebapp.client",
+            "outputPath": "dist/bookealowebapp",
             "index": "src/index.html", 
             "browser": "src/main.ts",
             "polyfills": [
@@ -73,10 +73,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "bookealowebapp.client:build:production"
+              "buildTarget": "bookealowebapp:build:production"
             },
             "development": {
-              "buildTarget": "bookealowebapp.client:build:development"
+              "buildTarget": "bookealowebapp:build:development"
             }
           },
           "defaultConfiguration": "development",
