@@ -5,7 +5,7 @@
     <!-- Allows the build (or compile) script located on package.json to run on Build -->
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
-    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\bookealowebapp.client\browser\</BuildOutputFolder>
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\bookealowebapp\browser\</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".github\**" />

@@ -4,9 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaRoot>..\bookealowebapp.client</SpaRoot>
-    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:4200</SpaProxyServerUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Bookealo.CommonModel\Bookealo.CommonModel.csproj" />
     <ProjectReference Include="..\Bookealo.Services\Bookealo.Services.csproj" />
-    <ProjectReference Include="..\bookealowebapp.client\bookealowebapp.client.esproj">
+    <ProjectReference Include="..\bookealowebapp\bookealowebapp.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

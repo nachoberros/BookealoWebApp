@@ -5,11 +5,11 @@ VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookealoWebApp.Server", "BookealoWebApp.Server\BookealoWebApp.Server.csproj", "{5A343AD0-F4A5-44CA-82B0-7EADEB0BBB77}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "bookealowebapp.client", "bookealowebapp.client\bookealowebapp.client.esproj", "{59ABEA2B-D4BC-44A9-9FC4-CE8C866059FD}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "bookealowebapp", "bookealowebapp.client\bookealowebapp.esproj", "{59ABEA2B-D4BC-44A9-9FC4-CE8C866059FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookealo.CommonModel", "Bookealo.CommonModel\Bookealo.CommonModel.csproj", "{7A6760FB-E897-4C3C-BBF4-D8FB011912E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookealo.CommonModel", "Bookealo.CommonModel\Bookealo.CommonModel.csproj", "{7A6760FB-E897-4C3C-BBF4-D8FB011912E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookealo.Services", "Bookealo.Services\Bookealo.Services.csproj", "{00568A97-0C6B-4C74-8589-B56F229A461F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookealo.Services", "Bookealo.Services\Bookealo.Services.csproj", "{00568A97-0C6B-4C74-8589-B56F229A461F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
