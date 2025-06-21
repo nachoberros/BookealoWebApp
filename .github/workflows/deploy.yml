@@ -23,14 +23,16 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Angular
-        run: npm install
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
 
       - name: Install dependencies
-        run: npm ci
+        working-directory: ./bookealowebapp
+        run: npm install
 
       - name: Build Angular app
-        run: npm run build -- --output-path=dist/bookealowebapp --configuration=production
+        working-directory: ./bookealowebapp
+        run: ng build --configuration=production --output-path=../dist
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -38,5 +40,5 @@ jobs:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "."   
+          app_location: "bookealowebapp"
           output_location: "dist"
