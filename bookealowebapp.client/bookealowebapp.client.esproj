@@ -7,4 +7,7 @@
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\bookealowebapp.client\browser\</BuildOutputFolder>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include=".github\workflows\deploy.yml" />
+  </ItemGroup>
 </Project>
